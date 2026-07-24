@@ -1153,19 +1153,19 @@ function handleBackButton(e) {
   backPressCount++;
 
   if (backPressCount === 1) {
-    // Tap pertama: tampilkan toast, mulai timer
+    // TAP PERTAMA: tampilkan toast, mulai timer 2.5 detik
     const toast = document.getElementById('toastBack');
     toast.classList.add('show');
     history.pushState({ backIntercept: true }, '', location.href);
 
     backPressTimer = setTimeout(() => {
-      // Lebih dari 2.5 detik: reset counter, sembunyikan toast (putar ulang)
+      // > 2.5 detik: toast hilang, counter reset ke 0 (PUTAR ULANG)
       backPressCount = 0;
       toast.classList.remove('show');
     }, BACK_PRESS_WINDOW);
 
   } else if (backPressCount === 2) {
-    // Tap kedua dalam 2.5 detik: langsung keluar
+    // TAP KEDUA (dalam 2.5 detik): langsung keluar
     clearTimeout(backPressTimer);
     backPressCount = 0;
     document.getElementById('toastBack').classList.remove('show');
@@ -1205,6 +1205,31 @@ function init() {
     document.getElementById('userName').textContent = user.name.split(' ')[0];
     document.getElementById('sidebarEmail').textContent = user.email || 'codereli37@gmail.com';
   }
+
+  // Auto-import draft from index.html into collection
+  let draft = null;
+  try { draft = JSON.parse(localStorage.getItem('em_atelier_draft')); } catch(e) {}
+  if (draft && draft.fromIndex) {
+    const invitations = getInvitations();
+    invitations.unshift({
+      id: generateId(),
+      title: draft.bride + ' & ' + draft.groom,
+      bride: draft.bride || 'Amara',
+      groom: draft.groom || 'Surya',
+      date: draft.date || '12 · 07 · 2026',
+      location: draft.location || 'Villa Tuscany, Bali',
+      message: 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.',
+      template: 'Botanical',
+      templateIcon: 'icon-botanical',
+      photo: null,
+      status: 'draft',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+    saveInvitations(invitations);
+    localStorage.removeItem('em_atelier_draft');
+  }
+
   renderDashboard();
   setupBackButton();
 }
