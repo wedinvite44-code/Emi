@@ -906,10 +906,6 @@ function saveInvitation(status) {
 function resetAtelier() {
   document.getElementById('editId').value = '';
   document.getElementById('inputTitle').value = '';
-  document.getElementById('inputBride').value = 'Amara';
-  document.getElementById('inputGroom').value = 'Surya';
-  document.getElementById('inputDate').value = '12 · 07 · 2026';
-  document.getElementById('inputLoc').value = 'Villa Tuscany, Bali';
   document.getElementById('inputMsg').value = 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
   document.getElementById('atelierTitle').textContent = 'Undangan Baru';
   currentPhoto = null;
@@ -920,6 +916,23 @@ function resetAtelier() {
   document.getElementById('previewPhoto').classList.add('em-hidden');
   document.getElementById('previewPhoto').src = '';
   setTemplate(document.querySelector('[data-template="Botanical"]'), 'Botanical', 'icon-botanical');
+
+  // Check if there's draft data from index.html
+  let draft = null;
+  try { draft = JSON.parse(localStorage.getItem('em_atelier_draft')); } catch(e) {}
+  if (draft && draft.fromIndex) {
+    document.getElementById('inputBride').value = draft.bride || 'Amara';
+    document.getElementById('inputGroom').value = draft.groom || 'Surya';
+    document.getElementById('inputDate').value = draft.date || '12 · 07 · 2026';
+    document.getElementById('inputLoc').value = draft.location || 'Villa Tuscany, Bali';
+    localStorage.removeItem('em_atelier_draft');
+    showToast('Data dari halaman utama diterapkan');
+  } else {
+    document.getElementById('inputBride').value = 'Amara';
+    document.getElementById('inputGroom').value = 'Surya';
+    document.getElementById('inputDate').value = '12 · 07 · 2026';
+    document.getElementById('inputLoc').value = 'Villa Tuscany, Bali';
+  }
   updatePreview();
 }
 
@@ -1130,45 +1143,41 @@ function addToCalendar() {
 // ===== DOUBLE-TAP BACK BUTTON =====
 let backPressCount = 0;
 let backPressTimer = null;
+const BACK_PRESS_WINDOW = 2500; // 3.5 detik
 
 function handleBackButton(e) {
-  // Only intercept back when on dashboard view
   const dash = document.getElementById('viewDashboard');
-  if (!dash || dash.classList.contains('em-hidden')) {
-    // Not on dashboard, allow normal back
-    return;
-  }
-
-  // Prevent default back navigation
+  if (!dash || dash.classList.contains('em-hidden')) return;
   if (e) e.preventDefault();
 
   backPressCount++;
 
   if (backPressCount === 1) {
-    // First press: show toast
+    // Tap pertama: tampilkan toast, mulai timer
     const toast = document.getElementById('toastBack');
     toast.classList.add('show');
-    showToast('Ketuk sekali lagi untuk keluar');
-
-    // Push a dummy state so next back triggers popstate again
     history.pushState({ backIntercept: true }, '', location.href);
 
     backPressTimer = setTimeout(() => {
+      // Window 3.5 detik habis: reset counter, sembunyikan toast
       backPressCount = 0;
       toast.classList.remove('show');
-    }, 2500);
+    }, BACK_PRESS_WINDOW);
+
   } else if (backPressCount >= 2) {
-    // Second press: logout and redirect
-    clearTimeout(backPressTimer);
-    backPressCount = 0;
-    document.getElementById('toastBack').classList.remove('show');
-    logout();
+    // Tap kedua: cek apakah masih dalam window
+    if (backPressCount === 2) {
+      // Langsung keluar (tap kedua dalam window)
+      clearTimeout(backPressTimer);
+      backPressCount = 0;
+      document.getElementById('toastBack').classList.remove('show');
+      logout();
+    }
   }
 }
 
 // Setup back button interception
 function setupBackButton() {
-  // Push initial state
   history.pushState({ backIntercept: true }, '', location.href);
 
   window.addEventListener('popstate', function(e) {
@@ -1176,7 +1185,6 @@ function setupBackButton() {
     const atelier = document.getElementById('viewAtelier');
     const detail = document.getElementById('viewDetail');
 
-    // If on atelier or detail, go back to dashboard instead of exiting
     if (atelier && !atelier.classList.contains('em-hidden')) {
       goTo('dashboard');
       history.pushState({ backIntercept: true }, '', location.href);
@@ -1188,7 +1196,6 @@ function setupBackButton() {
       return;
     }
 
-    // If on dashboard, handle double-tap
     if (dash && !dash.classList.contains('em-hidden')) {
       handleBackButton();
     }

@@ -915,7 +915,7 @@ body {
         <input type="text" id="input-location" value="Villa Tuscany, Bali" oninput="updatePreview()">
       </div>
 
-      <button class="btn-primary" onclick="window.location.href='auth.html'">Lanjutkan ke Pemesanan</button>
+      <button class="btn-primary" onclick="saveAtelierDraft()">Lanjutkan ke Pemesanan</button>
     </div>
   </div>
 </section>
@@ -1019,6 +1019,18 @@ function updatePreview() {
   document.getElementById('preview-name2').textContent = n2;
   document.getElementById('preview-date').textContent = d;
   document.getElementById('preview-location').textContent = l;
+}
+
+function saveAtelierDraft() {
+  const draft = {
+    bride: document.getElementById('input-name1').value || 'Amara',
+    groom: document.getElementById('input-name2').value || 'Surya',
+    date: document.getElementById('input-date').value || '12 · 07 · 2026',
+    location: document.getElementById('input-location').value || 'Villa Tuscany, Bali',
+    fromIndex: true
+  };
+  localStorage.setItem('em_atelier_draft', JSON.stringify(draft));
+  window.location.href = 'auth.html';
 }
 
 /* Navbar scroll effect */

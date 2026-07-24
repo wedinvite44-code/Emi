@@ -430,7 +430,7 @@ function handleGoogleCallback() {
     };
     localStorage.setItem('em_user', JSON.stringify(user));
 
-    // Bersihkan URL dan redirect ke halaman utama
+    // Bersihkan URL dan redirect ke dashboard (em_atelier_draft tetap ada jika ada)
     window.history.replaceState({}, document.title, window.location.pathname);
     window.location.href = 'dashboard.html';
   }
