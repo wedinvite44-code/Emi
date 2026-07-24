@@ -346,6 +346,74 @@
     body { background: var(--bg); }
     .em-widget { border-radius: 0; border: none; box-shadow: none; max-width: 100%; }
   }
+
+  /* Double-tap back toast */
+  .em-toast-back {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--dark);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    z-index: 200;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .em-toast-back.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .em-toast-back svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Calendar link */
+  .em-calendar-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+    margin-top: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--accent-light);
+    border-radius: 20px;
+    transition: all 0.3s;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  .em-calendar-link:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .em-calendar-link svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
 </style>
 </head>
 <body>
@@ -499,6 +567,10 @@
   </div>
 
   <div class="em-toast" id="toast"></div>
+  <div class="em-toast-back" id="toastBack">
+    <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+    Ketuk sekali lagi untuk keluar
+  </div>
 
   <div class="em-content" id="emContent">
     <!-- DASHBOARD VIEW -->
@@ -633,6 +705,10 @@
             <div class="em-phone-loc" id="detailLoc">Villa Tuscany, Bali</div>
             <div class="em-phone-msg" id="detailMsg">Dengan penuh sukacita...</div>
             <div class="em-phone-rsvp">RSVP · ETERNAL MANUSCRIPT</div>
+            <a href="#" class="em-calendar-link" id="detailCalendar" onclick="event.preventDefault(); addToCalendar();">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Tambah ke Kalender
+            </a>
           </div>
         </div>
       </div>
@@ -1009,6 +1085,116 @@ setTimeout(() => {
 }, 100);
 
 // ===== INIT =====
+
+// ===== CALENDAR INTEGRATION =====
+function addToCalendar() {
+  const inv = getInvitations().find(i => i.id === viewingId);
+  if (!inv) return;
+
+  const title = (inv.title || inv.bride + ' & ' + inv.groom) + ' — Pernikahan';
+  const location = inv.location || '';
+  const description = inv.message || '';
+
+  // Parse date (format: "12 · 07 · 2026" or various)
+  let dateStr = inv.date || '12 · 07 · 2026';
+  let startDate, endDate;
+
+  // Try to parse common formats
+  const parts = dateStr.replace(/[·\-\/\.]/g, ' ').trim().split(/\s+/);
+  if (parts.length >= 3) {
+    // Assume DD MM YYYY
+    const d = parseInt(parts[0]) || 12;
+    const m = parseInt(parts[1]) || 7;
+    const y = parseInt(parts[2]) || 2026;
+    startDate = new Date(y, m - 1, d, 10, 0, 0);
+    endDate = new Date(y, m - 1, d, 22, 0, 0);
+  } else {
+    startDate = new Date(2026, 6, 12, 10, 0, 0);
+    endDate = new Date(2026, 6, 12, 22, 0, 0);
+  }
+
+  const formatGCal = (d) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const start = formatGCal(startDate);
+  const end = formatGCal(endDate);
+
+  const gcalUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+    + '&text=' + encodeURIComponent(title)
+    + '&dates=' + start + '/' + end
+    + '&details=' + encodeURIComponent(description)
+    + '&location=' + encodeURIComponent(location)
+    + '&sf=true&output=xml';
+
+  window.open(gcalUrl, '_blank');
+}
+
+// ===== DOUBLE-TAP BACK BUTTON =====
+let backPressCount = 0;
+let backPressTimer = null;
+
+function handleBackButton(e) {
+  // Only intercept back when on dashboard view
+  const dash = document.getElementById('viewDashboard');
+  if (!dash || dash.classList.contains('em-hidden')) {
+    // Not on dashboard, allow normal back
+    return;
+  }
+
+  // Prevent default back navigation
+  if (e) e.preventDefault();
+
+  backPressCount++;
+
+  if (backPressCount === 1) {
+    // First press: show toast
+    const toast = document.getElementById('toastBack');
+    toast.classList.add('show');
+    showToast('Ketuk sekali lagi untuk keluar');
+
+    // Push a dummy state so next back triggers popstate again
+    history.pushState({ backIntercept: true }, '', location.href);
+
+    backPressTimer = setTimeout(() => {
+      backPressCount = 0;
+      toast.classList.remove('show');
+    }, 2500);
+  } else if (backPressCount >= 2) {
+    // Second press: logout and redirect
+    clearTimeout(backPressTimer);
+    backPressCount = 0;
+    document.getElementById('toastBack').classList.remove('show');
+    logout();
+  }
+}
+
+// Setup back button interception
+function setupBackButton() {
+  // Push initial state
+  history.pushState({ backIntercept: true }, '', location.href);
+
+  window.addEventListener('popstate', function(e) {
+    const dash = document.getElementById('viewDashboard');
+    const atelier = document.getElementById('viewAtelier');
+    const detail = document.getElementById('viewDetail');
+
+    // If on atelier or detail, go back to dashboard instead of exiting
+    if (atelier && !atelier.classList.contains('em-hidden')) {
+      goTo('dashboard');
+      history.pushState({ backIntercept: true }, '', location.href);
+      return;
+    }
+    if (detail && !detail.classList.contains('em-hidden')) {
+      goTo('dashboard');
+      history.pushState({ backIntercept: true }, '', location.href);
+      return;
+    }
+
+    // If on dashboard, handle double-tap
+    if (dash && !dash.classList.contains('em-hidden')) {
+      handleBackButton();
+    }
+  });
+}
+
 function init() {
   const user = JSON.parse(localStorage.getItem('em_user') || '{}');
   if (user.name) {
@@ -1016,6 +1202,7 @@ function init() {
     document.getElementById('sidebarEmail').textContent = user.email || 'codereli37@gmail.com';
   }
   renderDashboard();
+  setupBackButton();
 }
 
 function logout() {
