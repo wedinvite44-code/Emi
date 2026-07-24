@@ -89,7 +89,7 @@
     font-weight: 500; letter-spacing: 3px;
   }
   .em-sidebar-logo small {
-    display: block; font-size: 9px; letter-spacing: 3px; color: var(--text-secondary);
+    display: block; font-size: 9px; letter-spacing: 2px; color: var(--text-secondary);
     font-family: 'Inter', sans-serif; margin-top: 2px;
   }
   .em-close-btn {
@@ -101,8 +101,9 @@
   .em-nav a {
     display: flex; align-items: center; gap: 12px; padding: 12px 8px;
     text-decoration: none; color: var(--text-secondary); font-size: 12px;
-    font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
     border-left: 2px solid transparent; transition: all 0.2s;
+    white-space: nowrap;
   }
   .em-nav a.active { color: var(--accent); border-left-color: var(--accent); }
   .em-nav a:hover { color: var(--text-primary); }
@@ -174,9 +175,10 @@
   .em-atelier { padding: 16px 0 40px; }
   .em-back {
     display: inline-flex; align-items: center; gap: 8px; padding: 0 24px;
-    font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase;
+    font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
     color: var(--text-secondary); background: none; border: none; cursor: pointer;
     margin-bottom: 20px; font-family: inherit; transition: color 0.2s;
+    white-space: nowrap;
   }
   .em-back:hover { color: var(--text-primary); }
   .em-atelier-header { padding: 0 24px; margin-bottom: 20px; }
@@ -384,34 +386,61 @@
   }
 
   /* Calendar link */
-  .em-calendar-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--accent);
-    text-decoration: none;
-    margin-top: 8px;
-    padding: 6px 12px;
-    border: 1px solid var(--accent-light);
-    border-radius: 20px;
-    transition: all 0.3s;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+
+
+  /* Custom Confirm Modal */
+  .em-confirm-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.3);
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 90;
+    display: flex; align-items: center; justify-content: center;
   }
-  .em-calendar-link:hover {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
+  .em-confirm-overlay.open { opacity: 1; pointer-events: auto; }
+  .em-confirm-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px 28px; width: 85%; max-width: 320px;
+    text-align: center; transform: scale(0.9); opacity: 0;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .em-calendar-link svg {
-    width: 14px;
-    height: 14px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  .em-confirm-overlay.open .em-confirm-box {
+    transform: scale(1); opacity: 1;
+  }
+  .em-confirm-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 1.5px solid var(--accent); display: flex;
+    align-items: center; justify-content: center; margin: 0 auto 16px;
+  }
+  .em-confirm-icon svg {
+    width: 22px; height: 22px; stroke: var(--accent); fill: none;
+    stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .em-confirm-title {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px;
+    font-weight: 400; margin-bottom: 8px; color: var(--text-primary);
+  }
+  .em-confirm-text {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .em-confirm-actions {
+    display: flex; gap: 10px;
+  }
+  .em-confirm-actions button {
+    flex: 1; padding: 12px; font-family: inherit; font-size: 10px;
+    font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; border-radius: 8px; transition: all 0.3s;
+  }
+  .em-confirm-cancel {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .em-confirm-cancel:hover {
+    border-color: var(--text-muted); color: var(--text-primary);
+  }
+  .em-confirm-delete {
+    background: var(--dark); border: none; color: #fff;
+  }
+  .em-confirm-delete:hover {
+    background: var(--text-primary); transform: translateY(-1px);
   }
 
 </style>
@@ -567,6 +596,20 @@
   </div>
 
   <div class="em-toast" id="toast"></div>
+  <div class="em-confirm-overlay" id="confirmOverlay">
+    <div class="em-confirm-box">
+      <div class="em-confirm-icon">
+        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+      </div>
+      <div class="em-confirm-title">Hapus Undangan</div>
+      <div class="em-confirm-text">Yakin ingin menghapus undangan ini? Tindakan ini tidak dapat dibatalkan.</div>
+      <div class="em-confirm-actions">
+        <button class="em-confirm-cancel" onclick="closeConfirmModal()">Batal</button>
+        <button class="em-confirm-delete" onclick="confirmDelete()">Hapus</button>
+      </div>
+    </div>
+  </div>
+
   <div class="em-toast-back" id="toastBack">
     <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
     Ketuk sekali lagi untuk keluar
@@ -705,10 +748,7 @@
             <div class="em-phone-loc" id="detailLoc">Villa Tuscany, Bali</div>
             <div class="em-phone-msg" id="detailMsg">Dengan penuh sukacita...</div>
             <div class="em-phone-rsvp">RSVP · ETERNAL MANUSCRIPT</div>
-            <a href="#" class="em-calendar-link" id="detailCalendar" onclick="event.preventDefault(); addToCalendar();">
-              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              Tambah ke Kalender
-            </a>
+
           </div>
         </div>
       </div>
@@ -1010,14 +1050,32 @@ function editCurrentInvitation() {
   if (viewingId) editInvitation(viewingId);
 }
 
+let confirmDeleteCallback = null;
+
+function openConfirmModal(onConfirm) {
+  confirmDeleteCallback = onConfirm;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+function closeConfirmModal() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  confirmDeleteCallback = null;
+}
+
+function confirmDelete() {
+  if (confirmDeleteCallback) confirmDeleteCallback();
+  closeConfirmModal();
+}
+
 function deleteCurrentInvitation() {
   if (!viewingId) return;
-  if (!confirm('Yakin ingin menghapus undangan ini?')) return;
-  let list = getInvitations().filter(i => i.id !== viewingId);
-  saveInvitations(list);
-  showToast('Undangan dihapus');
-  viewingId = null;
-  goTo('dashboard');
+  openConfirmModal(() => {
+    let list = getInvitations().filter(i => i.id !== viewingId);
+    saveInvitations(list);
+    showToast('Undangan dihapus');
+    viewingId = null;
+    goTo('dashboard');
+  });
 }
 
 // ===== RENDER DASHBOARD =====
