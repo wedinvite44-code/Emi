@@ -443,6 +443,62 @@
     background: var(--text-primary); transform: translateY(-1px);
   }
 
+
+  /* Bottom Navigation Bar */
+  .em-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    background: rgba(250,250,248,0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0 16px;
+    z-index: 100;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
+  }
+  .em-bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    transition: all 0.3s;
+    color: var(--text-secondary);
+  }
+  .em-bottom-nav-item:hover,
+  .em-bottom-nav-item.active {
+    color: var(--accent);
+  }
+  .em-bottom-nav-item svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .em-bottom-nav-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .em-bottom-nav-spacer {
+    height: 60px;
+  }
+
 </style>
 </head>
 <body>
@@ -851,6 +907,8 @@ function goTo(view) {
     detail.classList.remove('em-hidden');
   }
 
+  updateBottomNav();
+
   content.scrollTop = 0;
   document.querySelectorAll('.reveal').forEach(el => {
     el.classList.remove('visible');
@@ -1255,6 +1313,29 @@ function setupBackButton() {
       handleBackButton();
     }
   });
+}
+
+
+function shareInvitation() {
+  const inv = getInvitations().find(i => i.id === viewingId);
+  if (!inv) return;
+  const text = 'Undangan Pernikahan ' + (inv.title || inv.bride + ' & ' + inv.groom) + ' — ' + inv.date + ' di ' + inv.location;
+  if (navigator.share) {
+    navigator.share({ title: 'Undangan Pernikahan', text: text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => showToast('Tautan disalin ke clipboard'));
+  }
+}
+
+function updateBottomNav() {
+  const nav = document.getElementById('bottomNav');
+  const detail = document.getElementById('viewDetail');
+  if (!nav) return;
+  if (detail && !detail.classList.contains('em-hidden')) {
+    nav.style.display = 'flex';
+  } else {
+    nav.style.display = 'none';
+  }
 }
 
 function init() {
