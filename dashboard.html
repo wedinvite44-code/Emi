@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>E · M Atelier — Dashboard Undangan Digital</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #FAFAF8;
+    --text-primary: #1A1A1A;
+    --text-secondary: #8B8680;
+    --text-muted: #A8A29E;
+    --accent: #B8956A;
+    --accent-light: #D4C4A8;
+    --dark: #1C2421;
+    --border: #E8E4DE;
+    --border-light: #F0EDE8;
+    --surface: #FFFFFF;
+    --preview-bg: #F5F3EF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #E5E5E5;
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  .em-widget {
+    background: var(--bg);
+    color: var(--text-primary);
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  /* ===== SCROLL PROGRESS BAR ===== */
+  .scroll-progress {
+    display: none !important;
+    position: absolute;
+    top: 61px;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    z-index: 100;
+    width: 0%;
+    transition: width 0.05s linear;
+  }
+
+  /* ===== HEADER SCROLL EFFECTS ===== */
+  .em-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250,250,248,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* State: scrolled down */
+  .em-header.scrolled {
+    background: rgba(250,250,248,0.98);
+    border-bottom-color: var(--border-light);
+    box-shadow: 0 1px 12px rgba(0,0,0,0.04);
+    padding: 12px 24px;
+  }
+
+  /* Logo shrink on scroll */
+  .em-logo {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    color: var(--text-primary);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .em-header.scrolled .em-logo {
+    font-size: 16px;
+    letter-spacing: 2.5px;
+  }
+
+  /* Menu button */
+  .em-menu-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: transform 0.3s;
+  }
+  .em-menu-btn:hover { transform: scale(1.1); }
+  .em-menu-btn span {
+    display: block;
+    height: 1.5px;
+    background: var(--text-primary);
+    border-radius: 1px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .em-menu-btn span:nth-child(1) { width: 18px; }
+  .em-menu-btn span:nth-child(2) { width: 14px; }
+  .em-menu-btn span:nth-child(3) { width: 18px; }
+
+  /* Hamburger to X animation when sidebar open */
+  .em-menu-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(4px, 4px);
+    width: 18px;
+  }
+  .em-menu-btn.active span:nth-child(2) {
+    opacity: 0;
+    width: 0;
+  }
+  .em-menu-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(4px, -4px);
+    width: 18px;
+  }
+
+  /* Content scroll */
+  .em-content {
+    height: calc(100vh - 61px);
+    max-height: 740px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    position: relative;
+  }
+  .em-content::-webkit-scrollbar { display: none; }
+
+  /* ===== REVEAL ANIMATIONS ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ===== PARALLAX ===== */
+  .parallax-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+  .parallax-bg {
+    position: absolute;
+    inset: -30%;
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 40%, rgba(184,149,106,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 70% 60%, rgba(200,190,175,0.04) 0%, transparent 60%);
+    z-index: 0;
+    will-change: transform;
+  }
+  .parallax-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== Dashboard ===== */
+  .em-dashboard { padding: 28px 24px 40px; }
+  .em-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .em-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .em-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  /* Stats Grid */
+  .em-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .em-stat {
+    background: var(--bg);
+    padding: 20px 16px;
+    text-align: left;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .em-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  }
+  .em-stat-value {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .em-stat-label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  /* Collection Header */
+  .em-collection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .em-collection-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    font-weight: 400;
+  }
+  .em-btn-dark {
+    background: var(--dark);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    transition: all 0.3s;
+  }
+  .em-btn-dark:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(28,36,33,0.2);
+  }
+
+  /* Empty State */
+  .em-empty {
+    border: 1px solid var(--border);
+    padding: 48px 24px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .em-empty:hover {
+    border-color: var(--accent-light);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  }
+  .em-empty-text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .em-empty-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+  .em-btn-outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 12px 32px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s;
+  }
+  .em-btn-outline:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  /* ===== Sidebar ===== */
+  .em-sidebar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 60;
+  }
+  .em-sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+  .em-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100%;
+    background: rgba(250,250,248,0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 70;
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .em-sidebar.open { transform: translateX(0); }
+  .em-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+  }
+  .em-sidebar-logo {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 3px;
+  }
+  .em-sidebar-logo small {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    margin-top: 2px;
+  }
+  .em-close-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .em-nav { list-style: none; }
+  .em-nav li { margin-bottom: 4px; }
+  .em-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 8px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-left: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .em-nav a.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  .em-nav a:hover { color: var(--text-primary); }
+  .em-nav-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .em-sidebar-footer {
+    margin-top: auto;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .em-sidebar-email {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+  .em-sidebar-logout {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.2s;
+  }
+  .em-sidebar-logout:hover { color: var(--text-primary); }
+
+  /* ===== Atelier Page ===== */
+  .em-atelier { padding: 16px 0 40px; }
+  .em-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 24px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-family: inherit;
+    transition: color 0.2s;
+  }
+  .em-back:hover { color: var(--text-primary); }
+  .em-atelier-header {
+    padding: 0 24px;
+    margin-bottom: 20px;
+  }
+  .em-atelier-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .em-atelier-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 26px;
+    font-weight: 400;
+  }
+  .em-preview-label {
+    text-align: center;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  /* Phone Preview */
+  .em-phone-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+    padding: 0 24px;
+  }
+  .em-phone {
+    width: 260px;
+    height: 420px;
+    border: 4px solid #4A524F;
+    border-radius: 28px;
+    background: var(--preview-bg);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    transition: transform 0.4s, box-shadow 0.4s;
+  }
+  .em-phone:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 28px 50px rgba(0,0,0,0.12);
+  }
+  .em-phone-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    text-align: center;
+  }
+  .em-phone-theme {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .em-phone-icon-wrap {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .em-phone-icon-wrap svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .em-phone-sub {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+  .em-phone-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+  .em-phone-ampersand {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin: 4px 0;
+  }
+  .em-phone-line {
+    width: 40px;
+    height: 1px;
+    background: var(--accent-light);
+    margin: 14px auto;
+  }
+  .em-phone-date {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .em-phone-loc {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+  }
+  .em-phone-msg {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .em-phone-rsvp {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Form */
+  .em-form { padding: 0 24px; }
+  .em-form-group { margin-bottom: 20px; }
+  .em-form-label {
+    display: block;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .em-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 8px 0;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.3s, padding-left 0.3s;
+  }
+  .em-input:focus {
+    border-bottom-color: var(--accent);
+    padding-left: 4px;
+  }
+  .em-input::placeholder {
+    color: var(--text-muted);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+  }
+
+  /* Template Grid */
+  .em-template-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .em-template {
+    border: 1px solid var(--border);
+    padding: 20px 8px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .em-template:hover {
+    border-color: var(--accent-light);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+  .em-template.active {
+    border-color: var(--accent);
+    background: rgba(184,149,106,0.06);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(184,149,106,0.1);
+  }
+  .em-template-icon-wrap {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+  }
+  .em-template:hover .em-template-icon-wrap {
+    transform: scale(1.15);
+  }
+  .em-template-icon-wrap svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .em-template-name {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  /* Photo Upload */
+  .em-photo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .em-photo-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1px dashed var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .em-photo-circle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: scale(1.05);
+  }
+  .em-photo-circle svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .em-btn-upload {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 8px 16px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s;
+  }
+  .em-btn-upload:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .em-btn-upload svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* AI Recommendation */
+  .em-ai-box {
+    border: 1px solid var(--accent-light);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    background: transparent;
+    width: 100%;
+    font-family: inherit;
+    transition: all 0.3s;
+  }
+  .em-ai-box:hover {
+    border-color: var(--accent);
+    background: rgba(184,149,106,0.04);
+    transform: translateX(4px);
+  }
+  .em-ai-icon-wrap {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .em-ai-icon-wrap svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .em-ai-text {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* Action Buttons */
+  .em-actions { display: flex; flex-direction: column; gap: 10px; }
+  .em-btn-primary {
+    background: var(--dark);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+  }
+  .em-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(28,36,33,0.25);
+  }
+  .em-btn-primary svg, .em-btn-secondary svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .em-btn-secondary {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 14px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+  }
+  .em-btn-secondary:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(184,149,106,0.2);
+  }
+
+  .em-hidden { display: none !important; }
+
+  /* Page transitions */
+  .page-transition {
+    animation: pageIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    body { background: var(--bg); }
+    .em-widget { border-radius: 0; border: none; box-shadow: none; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG Icon Definitions -->
+<svg style="display:none">
+  <defs>
+    <symbol id="icon-botanical" viewBox="0 0 24 24">
+      <path d="M12 22V8"/>
+      <path d="M12 8C12 8 8 6 8 3C8 1.5 9.5 1 10.5 2C11.5 3 12 5 12 5"/>
+      <path d="M12 8C12 8 16 6 16 3C16 1.5 14.5 1 13.5 2C12.5 3 12 5 12 5"/>
+      <path d="M12 14C9 12 6 13 5 16C4 19 7 21 12 22"/>
+      <path d="M12 14C15 12 18 13 19 16C20 19 17 21 12 22"/>
+    </symbol>
+    <symbol id="icon-baroque" viewBox="0 0 24 24">
+      <path d="M12 2L13.5 9.5L21 12L13.5 14.5L12 22L10.5 14.5L3 12L10.5 9.5Z"/>
+    </symbol>
+    <symbol id="icon-ranunculus" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 6C12 6 14 4 16 6C18 8 16 10 16 10"/>
+      <path d="M12 6C12 6 10 4 8 6C6 8 8 10 8 10"/>
+      <path d="M18 12C18 12 20 10 22 12C24 14 22 16 22 16"/>
+      <path d="M18 12C18 12 20 14 22 12"/>
+      <path d="M6 12C6 12 4 10 2 12C0 14 2 16 2 16"/>
+      <path d="M6 12C6 12 4 14 2 12"/>
+      <path d="M12 18C12 18 14 20 16 18C18 16 16 14 16 14"/>
+      <path d="M12 18C12 18 10 20 8 18C6 16 8 14 8 14"/>
+    </symbol>
+    <symbol id="icon-champagne" viewBox="0 0 24 24">
+      <path d="M12 2L22 12L12 22L2 12Z"/>
+      <path d="M12 7L17 12L12 17L7 12Z"/>
+    </symbol>
+    <symbol id="icon-logout" viewBox="0 0 24 24">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <polyline points="16 17 21 12 16 7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </symbol>
+    <symbol id="icon-save" viewBox="0 0 24 24">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="16" y1="13" x2="8" y2="13"/>
+      <line x1="16" y1="17" x2="8" y2="17"/>
+      <polyline points="10 9 9 9 8 9"/>
+    </symbol>
+    <symbol id="icon-eye" viewBox="0 0 24 24">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <symbol id="icon-sparkle" viewBox="0 0 24 24">
+      <path d="M12 2L13.5 9.5L21 12L13.5 14.5L12 22L10.5 14.5L3 12L10.5 9.5Z"/>
+    </symbol>
+    <symbol id="icon-image" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+      <circle cx="8.5" cy="8.5" r="1.5"/>
+      <polyline points="21 15 16 10 5 21"/>
+    </symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </symbol>
+    <symbol id="icon-dashboard" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7"/>
+      <rect x="14" y="3" width="7" height="7"/>
+      <rect x="14" y="14" width="7" height="7"/>
+      <rect x="3" y="14" width="7" height="7"/>
+    </symbol>
+    <symbol id="icon-plus-circle" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="16"/>
+      <line x1="8" y1="12" x2="16" y2="12"/>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </symbol>
+    <symbol id="icon-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="em-widget" id="emWidget">
+  <!-- Scroll Progress Bar -->
+
+  <!-- Header -->
+  <div class="em-header" id="emHeader">
+    <button class="em-menu-btn" id="menuBtn" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="em-logo">E · M</div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="em-sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="em-sidebar" id="sidebar">
+    <div class="em-sidebar-header">
+      <a href="eternal_manuscript.html" style="text-decoration:none;color:inherit;"><div class="em-sidebar-logo">E · M <small>ATELIER</small></div></a>
+    </div>
+    <ul class="em-nav">
+      <li>
+        <a href="eternal_manuscript.html" onclick="toggleSidebar();">
+          <span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-home"/></svg></span>
+          Beranda
+        </a>
+      </li>
+      <li>
+        <a href="#" class="active" onclick="goTo('dashboard'); toggleSidebar(); return false;">
+          <span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-dashboard"/></svg></span>
+          Dasbor
+        </a>
+      </li>
+      <li>
+        <a href="#" onclick="goTo('atelier'); toggleSidebar(); return false;">
+          <span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-plus-circle"/></svg></span>
+          Buat Undangan
+        </a>
+      </li>
+      <li>
+        <a href="#" onclick="toggleSidebar(); return false;">
+          <span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-user"/></svg></span>
+          Tamu
+        </a>
+      </li>
+    </ul>
+    <div class="em-sidebar-footer">
+      <div class="em-sidebar-email">codereli37@gmail.com</div>
+      <button class="em-sidebar-logout" onclick="logout()">
+        <svg width="16" height="16"><use href="#icon-logout"/></svg>
+        Keluar
+      </button>
+    </div>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="em-content" id="emContent">
+    <!-- DASHBOARD VIEW -->
+    <div class="em-dashboard page-transition" id="viewDashboard">
+      <div class="parallax-wrap">
+        <div class="parallax-bg" id="dashParallaxBg"></div>
+        <div class="parallax-content">
+          <div class="em-label reveal">Guest Command</div>
+          <div class="em-title reveal reveal-delay-1">Selamat datang, Code Reli.</div>
+          <div class="em-subtitle reveal reveal-delay-2">Kelola setiap momen undangan Anda dari satu ruang tenang.</div>
+        </div>
+      </div>
+
+      <div class="em-stats reveal reveal-delay-1">
+        <div class="em-stat">
+          <div class="em-stat-value">0</div>
+          <div class="em-stat-label">Total Undangan</div>
+        </div>
+        <div class="em-stat">
+          <div class="em-stat-value">0</div>
+          <div class="em-stat-label">Terbit</div>
+        </div>
+        <div class="em-stat">
+          <div class="em-stat-value">0</div>
+          <div class="em-stat-label">Draf</div>
+        </div>
+        <div class="em-stat">
+          <div class="em-stat-value" style="font-variant-numeric: tabular-nums;">MMXXVI</div>
+          <div class="em-stat-label">Tahun</div>
+        </div>
+      </div>
+
+      <div class="em-collection-header reveal reveal-delay-2">
+        <div class="em-collection-title">Koleksi Anda</div>
+        <button class="em-btn-dark" onclick="goTo('atelier')">
+          <svg width="12" height="12" style="stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round"><use href="#icon-plus"/></svg>
+          Buat Baru
+        </button>
+      </div>
+
+      <div class="em-empty reveal reveal-delay-3">
+        <div class="em-empty-text">Belum ada warisan yang dimulai.</div>
+        <div class="em-empty-sub">Mulai kurasi undangan pertama Anda hari ini.</div>
+        <button class="em-btn-outline" onclick="goTo('atelier')">Buka Atelier</button>
+      </div>
+    </div>
+
+    <!-- ATELIER VIEW -->
+    <div class="em-atelier em-hidden page-transition" id="viewAtelier">
+      <button class="em-back" onclick="goTo('dashboard')">
+        <svg width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#icon-arrow-left"/></svg>
+        Kembali ke Dasbor
+      </button>
+      <div class="em-atelier-header reveal">
+        <div class="em-atelier-label">Atelier</div>
+        <div class="em-atelier-title">Undangan Baru</div>
+      </div>
+
+      <div class="em-preview-label reveal reveal-delay-1">Pratinjau Langsung</div>
+      <div class="em-phone-wrap reveal reveal-delay-1">
+        <div class="em-phone">
+          <div class="em-phone-inner">
+            <div class="em-phone-theme" id="previewTheme">The Botanical</div>
+            <div class="em-phone-icon-wrap" id="previewIconWrap">
+              <svg><use href="#icon-botanical"/></svg>
+            </div>
+            <div class="em-phone-sub">— bersama keluarga —</div>
+            <div class="em-phone-name" id="previewBride">Amara</div>
+            <div class="em-phone-ampersand">&</div>
+            <div class="em-phone-name" id="previewGroom">Surya</div>
+            <div class="em-phone-line"></div>
+            <div class="em-phone-date" id="previewDate">12 · 07 · 2026</div>
+            <div class="em-phone-loc" id="previewLoc">Villa Tuscany, Bali</div>
+            <div class="em-phone-msg" id="previewMsg">Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.</div>
+            <div class="em-phone-rsvp">RSVP · ETERNAL MANUSCRIPT</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="em-form">
+        <div class="em-form-group reveal">
+          <label class="em-form-label">Templat</label>
+          <div class="em-template-grid">
+            <button class="em-template active" onclick="setTemplate(this, 'Botanical', 'icon-botanical')">
+              <div class="em-template-icon-wrap"><svg><use href="#icon-botanical"/></svg></div>
+              <div class="em-template-name">Botanical</div>
+            </button>
+            <button class="em-template" onclick="setTemplate(this, 'Baroque', 'icon-baroque')">
+              <div class="em-template-icon-wrap"><svg><use href="#icon-baroque"/></svg></div>
+              <div class="em-template-name">Baroque</div>
+            </button>
+            <button class="em-template" onclick="setTemplate(this, 'Ranunculus', 'icon-ranunculus')">
+              <div class="em-template-icon-wrap"><svg><use href="#icon-ranunculus"/></svg></div>
+              <div class="em-template-name">Ranunculus</div>
+            </button>
+            <button class="em-template" onclick="setTemplate(this, 'Champagne', 'icon-champagne')">
+              <div class="em-template-icon-wrap"><svg><use href="#icon-champagne"/></svg></div>
+              <div class="em-template-name">Champagne</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="em-form-group reveal reveal-delay-1">
+          <label class="em-form-label">Judul (Opsional)</label>
+          <input type="text" class="em-input" placeholder="Otomatis dari nama mempelai">
+        </div>
+
+        <div class="em-form-group reveal reveal-delay-1">
+          <label class="em-form-label">Mempelai Wanita</label>
+          <input type="text" class="em-input" value="Amara" id="inputBride" oninput="updatePreview()">
+        </div>
+
+        <div class="em-form-group reveal reveal-delay-2">
+          <label class="em-form-label">Mempelai Pria</label>
+          <input type="text" class="em-input" value="Surya" id="inputGroom" oninput="updatePreview()">
+        </div>
+
+        <div class="em-form-group reveal reveal-delay-2">
+          <label class="em-form-label">Foto Pernikahan (Opsional)</label>
+          <div class="em-photo-row">
+            <div class="em-photo-circle"><svg><use href="#icon-image"/></svg></div>
+            <button class="em-btn-upload">
+              <svg><use href="#icon-image"/></svg>
+              Unggah Foto
+            </button>
+          </div>
+        </div>
+
+        <div class="em-form-group reveal reveal-delay-2">
+          <label class="em-form-label">Tanggal Acara</label>
+          <input type="text" class="em-input" placeholder="Pilih tanggal" style="font-family: 'Inter', sans-serif; font-size: 14px;">
+        </div>
+
+        <div class="em-form-group reveal reveal-delay-3">
+          <label class="em-form-label">Lokasi</label>
+          <input type="text" class="em-input" value="Villa Tuscany, Bali" id="inputLoc" oninput="updatePreview()">
+        </div>
+
+        <div class="em-form-group reveal reveal-delay-3">
+          <label class="em-form-label">Pesan Undangan</label>
+          <textarea class="em-input" rows="2" id="inputMsg" oninput="updatePreview()" style="resize: none; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px; line-height: 1.5;">Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.</textarea>
+        </div>
+
+        <div class="em-form-group reveal reveal-delay-3">
+          <label class="em-form-label">Rekomendasi AI</label>
+          <button class="em-ai-box">
+            <span class="em-ai-icon-wrap"><svg><use href="#icon-sparkle"/></svg></span>
+            <span class="em-ai-text">Sarankan Pesan & Templat</span>
+          </button>
+        </div>
+
+        <div class="em-actions reveal reveal-delay-4">
+          <button class="em-btn-primary">
+            <svg><use href="#icon-save"/></svg>
+            Simpan Draf
+          </button>
+          <button class="em-btn-secondary">
+            <svg><use href="#icon-eye"/></svg>
+            Simpan & Terbitkan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== SIDEBAR =====
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+    document.getElementById('menuBtn').classList.toggle('active');
+  }
+
+  // ===== PAGE NAVIGATION =====
+  function goTo(view) {
+    const dash = document.getElementById('viewDashboard');
+    const atelier = document.getElementById('viewAtelier');
+    const content = document.getElementById('emContent');
+
+    if (view === 'dashboard') {
+      atelier.classList.add('em-hidden');
+      dash.classList.remove('em-hidden');
+      content.scrollTop = 0;
+      dash.querySelectorAll('.reveal').forEach(el => {
+        el.classList.remove('visible');
+        void el.offsetWidth;
+        el.classList.add('visible');
+      });
+    } else {
+      dash.classList.add('em-hidden');
+      atelier.classList.remove('em-hidden');
+      content.scrollTop = 0;
+      atelier.querySelectorAll('.reveal').forEach(el => {
+        el.classList.remove('visible');
+        void el.offsetWidth;
+        el.classList.add('visible');
+      });
+    }
+  }
+
+  // ===== PREVIEW UPDATE =====
+  function updatePreview() {
+    document.getElementById('previewBride').textContent = document.getElementById('inputBride').value || 'Amara';
+    document.getElementById('previewGroom').textContent = document.getElementById('inputGroom').value || 'Surya';
+    document.getElementById('previewLoc').textContent = document.getElementById('inputLoc').value || 'Villa Tuscany, Bali';
+    document.getElementById('previewMsg').textContent = document.getElementById('inputMsg').value || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
+  }
+
+  function setTemplate(el, name, iconId) {
+    document.querySelectorAll('.em-template').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('previewTheme').textContent = 'The ' + name;
+    document.getElementById('previewIconWrap').innerHTML = '<svg><use href="#' + iconId + '"/></svg>';
+  }
+
+  // ===== SCROLL EFFECTS =====
+  const header = document.getElementById('emHeader');
+  const content = document.getElementById('emContent');
+  const progressBar = document.getElementById('scrollProgress');
+  const dashParallaxBg = document.getElementById('dashParallaxBg');
+
+  let lastScrollTop = 0;
+  let ticking = false;
+
+  content.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollTop = content.scrollTop;
+        const scrollHeight = content.scrollHeight - content.clientHeight;
+        const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+
+        // 1. Progress bar (hidden)
+
+        // 2. Header: add/remove scrolled class
+        if (scrollTop > 20) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+
+        // 3. Header always visible — no auto-hide on scroll
+
+        // 4. Parallax background
+        if (dashParallaxBg && !document.getElementById('viewDashboard').classList.contains('em-hidden')) {
+          dashParallaxBg.style.transform = 'translateY(' + (scrollTop * 0.3) + 'px)';
+        }
+
+        lastScrollTop = scrollTop;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // ===== SCROLL REVEAL =====
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, {
+    threshold: 0.1,
+    root: content,
+    rootMargin: '0px 0px -30px 0px'
+  });
+
+  function observeReveals() {
+    document.querySelectorAll('.reveal').forEach(el => {
+      revealObserver.observe(el);
+    });
+  }
+
+  observeReveals();
+
+  setTimeout(() => {
+    document.querySelectorAll('.reveal').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        el.classList.add('visible');
+      }
+    });
+  }, 100);
+function logout() {
+    localStorage.removeItem('em_user');
+    window.location.href = 'auth.html';
+  }
+</script>
+
+</body>
+</html>

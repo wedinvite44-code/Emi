@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eternal Manuscript — Undangan Digital Warisan</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-cream: #f5f0eb;
+  --color-cream-dark: #ebe4db;
+  --color-charcoal: #1a1a1a;
+  --color-dark-green: #1a1f1c;
+  --color-gold: #b8956a;
+  --color-gold-light: #c9a96e;
+  --color-text-muted: #6b6560;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-serif);
+  background-color: var(--color-cream);
+  color: var(--color-charcoal);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-weight: 400;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== CINEMATIC PAGE LOAD ANIMATIONS ========== */
+@keyframes blurIn {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes lineGrow {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
+}
+
+.hero-content > * {
+  opacity: 0;
+  animation: blurIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero-content .label {
+  animation-delay: 0.3s;
+}
+
+.hero-content h1 {
+  animation-delay: 0.6s;
+}
+
+.hero-content p {
+  animation-delay: 0.9s;
+}
+
+.hero-content .hero-buttons {
+  animation-delay: 1.2s;
+}
+
+.hero-scroll {
+  opacity: 0;
+  animation: blurIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 1.6s;
+}
+
+/* ========== NAVIGATION ========== */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav.scrolled {
+  background: rgba(245, 240, 235, 0.92);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  padding: 1rem 2rem;
+}
+
+.nav-logo { text-align: center; }
+.nav-logo .em {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  transition: all 0.4s ease;
+}
+.nav-logo .sub {
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+  transition: all 0.4s ease;
+}
+
+.nav.scrolled .nav-logo .em {
+  font-size: 1.1rem;
+}
+
+.nav.scrolled .nav-logo .sub {
+  font-size: 0.5rem;
+}
+
+.nav-link {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  text-decoration: none;
+  font-weight: 400;
+  transition: all 0.3s ease;
+}
+
+/* ========== HERO ========== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 6rem 2rem 4rem;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(184,149,106,0.08) 0%, transparent 70%),
+    url('https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=1200&q=80') center/cover no-repeat;
+  opacity: 0.35;
+  filter: saturate(0.8) brightness(1.1);
+  opacity: 0;
+  animation: fadeIn 1.5s ease forwards;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+}
+
+.hero .label { margin-bottom: 1.5rem; display: block; }
+
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.hero h1 .gold {
+  color: var(--color-gold);
+  font-style: italic;
+}
+
+.hero p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  max-width: 480px;
+  margin-bottom: 2.5rem;
+  font-weight: 400;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+}
+
+.hero-scroll .scroll-label {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.hero-scroll .scroll-line {
+  width: 1px;
+  height: 40px;
+  background: var(--color-gold);
+  margin: 0 auto;
+  transform-origin: top;
+  animation: lineGrow 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 2s;
+  transform: scaleY(0);
+}
+
+.btn-primary {
+  background: var(--color-dark-green);
+  color: var(--color-cream);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 1rem 2rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.btn-primary:hover {
+  background: var(--color-charcoal);
+  transform: translateY(-2px);
+}
+
+.btn-text {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-charcoal);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-charcoal);
+  padding-bottom: 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.btn-text:hover {
+  color: var(--color-gold);
+  border-color: var(--color-gold);
+}
+
+/* ========== HALL OF AESTHETICS ========== */
+.hall {
+  padding: 6rem 2rem;
+  text-align: center;
+}
+
+.hall-header {
+  max-width: 600px;
+  margin: 0 auto 4rem;
+}
+
+.hall h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 1rem 0;
+}
+
+.hall p {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-cream-dark);
+  aspect-ratio: 4/5;
+  cursor: pointer;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.gallery-item .tag {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  mix-blend-mode: difference;
+}
+
+/* ========== ATELIER ========== */
+.atelier {
+  padding: 6rem 2rem;
+  background: linear-gradient(to bottom, var(--color-cream), var(--color-cream-dark));
+}
+
+.atelier-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.atelier h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 400;
+  margin: 1rem 0 1.5rem;
+}
+
+.atelier > .atelier-inner > p {
+  color: var(--color-text-muted);
+  max-width: 500px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+}
+
+.phone-preview-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.phone-frame {
+  width: 280px;
+  height: 560px;
+  background: var(--color-charcoal);
+  border-radius: 36px;
+  padding: 10px;
+  box-shadow:
+    0 25px 80px rgba(0,0,0,0.15),
+    0 10px 30px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--color-cream);
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+.phone-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 24px;
+  background: var(--color-charcoal);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.invite-content {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.invite-label {
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: 0.75rem;
+}
+
+.invite-sub {
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.invite-names {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+}
+
+.invite-names .ampersand {
+  font-style: italic;
+  color: var(--color-gold);
+  font-size: 1.5rem;
+  display: block;
+  margin: 0.25rem 0;
+}
+
+.invite-line {
+  width: 40px;
+  height: 1px;
+  background: var(--color-gold);
+  margin: 1rem auto;
+}
+
+.invite-date {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.invite-location {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.invite-rsvp {
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.phone-caption {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: 1.5rem;
+}
+
+.form-section {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.form-section p {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+  padding: 0.75rem 0;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--color-charcoal);
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: var(--color-gold);
+}
+
+.form-section .btn-primary {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* ========== QUOTE ========== */
+.quote-section {
+  padding: 6rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-bg {
+  position: absolute;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=1200&q=80') center/cover no-repeat;
+  opacity: 0.25;
+  filter: saturate(0.6);
+}
+
+.quote-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.quote-content blockquote {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--color-charcoal);
+}
+
+/* ========== PROCESS ========== */
+.process {
+  padding: 6rem 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.process-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.process h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 400;
+  margin-top: 1rem;
+}
+
+.process-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.step {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.step-num {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--color-gold);
+  line-height: 1;
+  min-width: 60px;
+  opacity: 0.6;
+}
+
+.step-content h3 {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.step-content p {
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+/* ========== PHILOSOPHY ========== */
+.philosophy {
+  background: var(--color-dark-green);
+  color: var(--color-cream);
+  padding: 6rem 2rem;
+  text-align: center;
+}
+
+.philosophy-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.philosophy h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 300;
+  margin: 1rem 0 3rem;
+}
+
+.philosophy h2 .gold {
+  color: var(--color-gold);
+}
+
+.philosophy-items {
+  text-align: left;
+  margin-bottom: 3rem;
+}
+
+.phil-item {
+  padding: 2rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.phil-item:last-child {
+  border-bottom: none;
+}
+
+.phil-item h3 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.phil-item p {
+  color: rgba(245,240,235,0.6);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-gold);
+  border: 1px solid var(--color-gold);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 1rem 2.5rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.btn-outline:hover {
+  background: var(--color-gold);
+  color: var(--color-dark-green);
+}
+
+/* ========== NEWSLETTER ========== */
+.newsletter {
+  padding: 6rem 2rem;
+  text-align: center;
+  background: var(--color-cream);
+}
+
+.newsletter-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.newsletter h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 400;
+  margin: 1rem 0 1rem;
+}
+
+.newsletter p {
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.newsletter-form {
+  display: flex;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  padding-bottom: 0.5rem;
+  max-width: 400px;
+  margin: 0 auto 4rem;
+}
+
+.newsletter-form input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--color-charcoal);
+  outline: none;
+}
+
+.newsletter-form input::placeholder {
+  color: rgba(0,0,0,0.3);
+  font-style: italic;
+}
+
+.newsletter-form button {
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  padding: 3rem 2rem;
+  text-align: center;
+  background: var(--color-cream);
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.footer-logo {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.footer-copy {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 2rem;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: var(--color-gold);
+}
+
+@media (max-width: 640px) {
+  .step { flex-direction: column; gap: 1rem; }
+  .step-num { font-size: 2rem; }
+  .hero { padding-top: 8rem; }
+  .gallery { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="navbar">
+  <div class="nav-logo">
+    <div class="em">E · M</div>
+    <div class="sub">Eternal Manuscript</div>
+  </div>
+  <a href="#koleksi" class="nav-link">Koleksi</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="label">The Curated Heirloom</span>
+    <h1>An invitation <span class="gold">worthy</span> of the moment it celebrates.</h1>
+    <p>Kami merancang undangan digital bukan sekadar pemberitahuan, melainkan warisan fungsional — menyatukan jiwa letterpress klasik dengan kelancaran rekayasa modern.</p>
+    <div class="hero-buttons">
+      <button class="btn-primary" onclick="window.location.href='auth.html'">Jelajahi Koleksi</button>
+      <a href="#atelier" class="btn-text">Lihat Atelier</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-label">Gulir</div>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section class="hall" id="koleksi">
+  <div class="hall-header reveal">
+    <span class="label">The Hall of Aesthetics</span>
+    <h2>Koleksi yang dikurasi seperti galeri seni</h2>
+    <p>Setiap desain adalah karya terbatas. Arahkan kursor untuk menyingkap harga dan menyiapkan kustomisasi.</p>
+  </div>
+  <div class="gallery">
+    <div class="gallery-item reveal">
+      <span class="tag">Minimalis</span>
+      <img src="https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?w=600&q=80" alt="Minimalis">
+    </div>
+    <div class="gallery-item reveal">
+      <span class="tag">Klasik</span>
+      <img src="https://images.unsplash.com/photo-1606293926075-69a00febf780?w=600&q=80" alt="Klasik">
+    </div>
+    <div class="gallery-item reveal">
+      <span class="tag">Modern</span>
+      <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=600&q=80" alt="Modern">
+    </div>
+    <div class="gallery-item reveal">
+      <span class="tag">Modernist</span>
+      <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80" alt="Modernist">
+    </div>
+  </div>
+</section>
+
+<section class="atelier" id="atelier">
+  <div class="atelier-inner">
+    <div class="reveal">
+      <span class="label">The Atelier View</span>
+      <h2>Lihat namamu hadir dalam desain, seketika</h2>
+    </div>
+
+    <div class="phone-preview-wrapper reveal">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-notch"></div>
+          <div class="invite-content">
+            <div class="invite-label">The Botanical</div>
+            <div class="invite-sub">— bersama keluarga —</div>
+            <div class="invite-names">
+              <span id="preview-name1">Amara</span>
+              <span class="ampersand">&</span>
+              <span id="preview-name2">Surya</span>
+            </div>
+            <div class="invite-line"></div>
+            <div class="invite-date" id="preview-date">12 · 07 · 2026</div>
+            <div class="invite-location" id="preview-location">Villa Tuscany, Bali</div>
+            <div class="invite-rsvp">RSVP · ETERNAL MANUSCRIPT</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-caption reveal">PRATINJAU LANGSUNG · PERANGKAT SELULER</div>
+
+    <div class="form-section reveal">
+      <p>Saat kamu mengetik, pratinjau di samping memperbarui tipografi secara real-time menggunakan font khas setiap templat — menyatukan impian menjadi nyata.</p>
+
+      <div class="form-group">
+        <label>Nama Mempelai Wanita</label>
+        <input type="text" id="input-name1" value="Amara" oninput="updatePreview()">
+      </div>
+      <div class="form-group">
+        <label>Nama Mempelai Pria</label>
+        <input type="text" id="input-name2" value="Surya" oninput="updatePreview()">
+      </div>
+      <div class="form-group">
+        <label>Tanggal Acara</label>
+        <input type="text" id="input-date" value="12 · 07 · 2026" oninput="updatePreview()">
+      </div>
+      <div class="form-group">
+        <label>Lokasi</label>
+        <input type="text" id="input-location" value="Villa Tuscany, Bali" oninput="updatePreview()">
+      </div>
+
+      <button class="btn-primary" onclick="window.location.href='auth.html'">Lanjutkan ke Pemesanan</button>
+    </div>
+  </div>
+</section>
+
+<section class="quote-section">
+  <div class="quote-bg"></div>
+  <div class="quote-content reveal">
+    <blockquote>"Setiap detail dibentuk dengan tangan, lalu disempurnakan oleh cahaya."</blockquote>
+  </div>
+</section>
+
+<section class="process">
+  <div class="process-header reveal">
+    <span class="label">Proses</span>
+    <h2>Empat lipatan menuju warisan</h2>
+  </div>
+  <div class="process-steps">
+    <div class="step reveal">
+      <div class="step-num">I</div>
+      <div class="step-content">
+        <h3>Pilih Warisan</h3>
+        <p>Telusuri Hall of Aesthetics dan pilih templat yang berbicara kepada momenmu.</p>
+      </div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">II</div>
+      <div class="step-content">
+        <h3>Kurasi di Atelier</h3>
+        <p>Masukkan nama, tanggal, dan lokasi. Saksikan tipografi hidup secara real-time.</p>
+      </div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">III</div>
+      <div class="step-content">
+        <h3>Kirim & Kelola</h3>
+        <p>Bagikan tautan, pantau RSVP, dan siarkan pembaruan dari Guest Command.</p>
+      </div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">IV</div>
+      <div class="step-content">
+        <h3>Wariskan Momen</h3>
+        <p>Undanganmu tetap tersimpan sebagai kenangan fungsional yang abadi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="philosophy">
+  <div class="philosophy-inner reveal">
+    <span class="label">Filosofi</span>
+    <h2>The Curated <span class="gold">Heirloom</span></h2>
+    <div class="philosophy-items">
+      <div class="phil-item">
+        <h3>Letterpress Digital</h3>
+        <p>Tekstur kertas katun bermutu tinggi disuling ke dalam piksel, bukan ditiru secara dangkal.</p>
+      </div>
+      <div class="phil-item">
+        <h3>Tipografi sebagai Ibadah</h3>
+        <p>Setiap kerning dan ukuran huruf dihitung dengan ritual seorang penjilid buku.</p>
+      </div>
+      <div class="phil-item">
+        <h3>Kelancaran Tanpa Gesekan</h3>
+        <p>Rekayasa modern yang tak terlihat, agar momen tetap menjadi pusat.</p>
+      </div>
+    </div>
+    <button class="btn-outline" onclick="window.location.href='auth.html'">Mulai Kurasi</button>
+  </div>
+</section>
+
+<section class="newsletter">
+  <div class="newsletter-inner reveal">
+    <span class="label">Surat dari Atelier</span>
+    <h2>Terima koleksi baru & inspirasi.</h2>
+    <p>Komunikasi terbatas, seperti undangan itu sendiri. Tanpa kebisingan.</p>
+    <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Berhasil berlangganan!');">
+      <input type="email" placeholder="alamat surel anda" required>
+      <button type="submit">Kirim →</button>
+    </form>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-logo">E · M</div>
+  <div class="footer-copy">Eternal Manuscript · 2026</div>
+  <div class="footer-links">
+    <a href="#">WhatsApp</a>
+    <a href="#">Instagram</a>
+    <a href="#">Privasi</a>
+    <a href="#">Syarat</a>
+  </div>
+</footer>
+
+<script>
+function updatePreview() {
+  const n1 = document.getElementById('input-name1').value || 'Amara';
+  const n2 = document.getElementById('input-name2').value || 'Surya';
+  const d = document.getElementById('input-date').value || '12 · 07 · 2026';
+  const l = document.getElementById('input-location').value || 'Villa Tuscany, Bali';
+  document.getElementById('preview-name1').textContent = n1;
+  document.getElementById('preview-name2').textContent = n2;
+  document.getElementById('preview-date').textContent = d;
+  document.getElementById('preview-location').textContent = l;
+}
+
+/* Navbar scroll effect */
+const navbar = document.getElementById('navbar');
+let lastScroll = 0;
+
+window.addEventListener('scroll', () => {
+  const currentScroll = window.pageYOffset;
+
+  if (currentScroll > 50) {
+    navbar.classList.add('scrolled');
+  } else {
+    navbar.classList.remove('scrolled');
+  }
+
+  lastScroll = currentScroll;
+});
+
+/* Intersection Observer for reveal animations */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

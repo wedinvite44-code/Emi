@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Masuk — Eternal Manuscript</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-cream: #f5f0eb;
+  --color-charcoal: #1a1a1a;
+  --color-dark-green: #1a1f1c;
+  --color-gold: #b8956a;
+  --color-gold-light: #c9a96e;
+  --color-text-muted: #6b6560;
+  --color-text-light: #9a948e;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: var(--font-serif);
+  background: var(--color-cream);
+  color: var(--color-charcoal);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.main {
+  width: 100%;
+  max-width: 420px;
+  padding: 3rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.brand {
+  text-align: center;
+  margin-bottom: 2rem;
+  animation: blurIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.brand .em {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  color: var(--color-charcoal);
+  margin-bottom: 0.25rem;
+}
+.brand .sub {
+  font-family: var(--font-serif);
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.auth-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-gold);
+  animation: blurIn 0.8s 0.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+.auth-icon svg { width: 24px; height: 24px; }
+.heading {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  animation: blurIn 0.8s 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+.heading h1 {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--color-charcoal);
+  line-height: 1.3;
+}
+.subheading {
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin-bottom: 2rem;
+  animation: blurIn 0.8s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+.form-card {
+  width: 100%;
+  background: rgba(255,255,255,0.4);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px;
+  padding: 1.5rem;
+  animation: blurIn 0.8s 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+.google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--color-charcoal);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1.25rem;
+}
+.google-btn:hover {
+  background: rgba(0,0,0,0.02);
+  border-color: rgba(0,0,0,0.15);
+}
+.google-btn svg { width: 18px; height: 18px; }
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0,0,0,0.08);
+}
+.divider span {
+  font-family: var(--font-serif);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+.form-group { margin-bottom: 1.1rem; }
+.form-group label {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-wrap .icon {
+  position: absolute;
+  left: 0.9rem;
+  color: var(--color-text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.input-wrap .icon svg { width: 18px; height: 18px; }
+.input-wrap input {
+  width: 100%;
+  padding: 0.85rem 0.9rem 0.85rem 2.6rem;
+  background: transparent;
+  border: 1.5px solid rgba(0,0,0,0.1);
+  border-radius: 10px;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--color-charcoal);
+  outline: none;
+  transition: all 0.3s ease;
+}
+.input-wrap input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(184,149,106,0.1);
+}
+.input-wrap input::placeholder {
+  color: var(--color-text-light);
+  font-style: italic;
+}
+.password-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.password-row label {
+  font-family: var(--font-serif);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.forgot-link {
+  font-family: var(--font-serif);
+  font-size: 0.65rem;
+  color: var(--color-gold);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.forgot-link:hover { color: var(--color-gold-light); }
+.submit-btn {
+  width: 100%;
+  padding: 0.95rem;
+  background: var(--color-dark-green);
+  color: var(--color-cream);
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  margin-top: 0.5rem;
+}
+.submit-btn:hover {
+  background: var(--color-charcoal);
+  transform: translateY(-1px);
+}
+.toggle-wrap {
+  text-align: center;
+  margin-top: 1.5rem;
+  animation: blurIn 0.8s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+.toggle-wrap p {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+.toggle-wrap a {
+  color: var(--color-gold);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+.toggle-wrap a:hover { color: var(--color-gold-light); }
+@keyframes blurIn {
+  0% { opacity: 0; filter: blur(10px); transform: translateY(8px); }
+  100% { opacity: 1; filter: blur(0px); transform: translateY(0); }
+}
+.view {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+.view.active { display: flex; }
+@media (min-width: 640px) {
+  .main { padding-top: 4rem; }
+  .form-card { padding: 2rem; }
+}
+</style>
+</head>
+<body>
+
+<main class="main">
+
+  <!-- LOGIN -->
+  <div class="view active" id="login-view">
+    <div class="brand">
+      <div class="em">E · M</div>
+      <div class="sub">Eternal Manuscript</div>
+    </div>
+
+    <div class="auth-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+    </div>
+
+    <div class="heading"><h1>Selamat datang kembali</h1></div>
+    <div class="subheading">Masuk ke akun Anda</div>
+
+    <div class="form-card">
+      <button class="google-btn" type="button" onclick="googleSignIn()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Lanjut dengan Google
+      </button>
+
+      <div class="divider"><span>Atau</span></div>
+
+      <form onsubmit="event.preventDefault(); handleLogin();">
+        <div class="form-group">
+          <label>Email</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <input type="email" placeholder="anda@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="password-row">
+            <label>Kata Sandi</label>
+            <a href="forgot-password.html" class="forgot-link">Lupa kata sandi?</a>
+          </div>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+            <input type="password" placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Masuk</button>
+      </form>
+    </div>
+
+    <div class="toggle-wrap">
+      <p>Belum punya akun? <a href="#" onclick="showRegister(event)">Daftar</a></p>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="view" id="register-view">
+    <div class="brand">
+      <div class="em">E · M</div>
+      <div class="sub">Eternal Manuscript</div>
+    </div>
+
+    <div class="auth-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+    </div>
+
+    <div class="heading"><h1>Buat akun Anda</h1></div>
+    <div class="subheading">Daftar untuk memulai</div>
+
+    <div class="form-card">
+      <button class="google-btn" type="button" onclick="googleSignIn()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Lanjut dengan Google
+      </button>
+
+      <div class="divider"><span>Atau</span></div>
+
+      <form onsubmit="event.preventDefault(); handleRegister();">
+        <div class="form-group">
+          <label>Email</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+            <input type="email" placeholder="anda@email.com" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Kata Sandi</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+            <input type="password" placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Konfirmasi Kata Sandi</label>
+          <div class="input-wrap">
+            <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
+            <input type="password" placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Buat akun</button>
+      </form>
+    </div>
+
+    <div class="toggle-wrap">
+      <p>Sudah punya akun? <a href="#" onclick="showLogin(event)">Masuk</a></p>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ============================================
+// GANTI CLIENT_ID DI BAWAH INI SETELAH DAFTAR
+// ============================================
+const GOOGLE_CLIENT_ID = '192555486809-7e15vljkntgt4hjjcmkpoht3l52jeiqa.apps.googleusercontent.com';
+
+// ============================================
+// OAUTH 2.0 REDIRECT FLOW (FULL SCREEN)
+// ============================================
+function googleSignIn() {
+  if (GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE_CLIENT_ID')) {
+    alert('GOOGLE_CLIENT_ID belum diatur.\n\nSilakan daftarkan di Google Cloud Console terlebih dahulu.');
+    return;
+  }
+
+  const redirectUri = window.location.origin + window.location.pathname;
+  const scope = 'openid email profile';
+  const state = 'login_' + Date.now();
+
+  sessionStorage.setItem('google_state', state);
+
+  const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
+    + '?client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID)
+    + '&redirect_uri=' + encodeURIComponent(redirectUri)
+    + '&response_type=token id_token'
+    + '&scope=' + encodeURIComponent(scope)
+    + '&state=' + encodeURIComponent(state)
+    + '&nonce=' + Date.now()
+    + '&prompt=select_account';
+
+  // Arahkan ke halaman Google FULL SCREEN
+  window.location.href = authUrl;
+}
+
+// Cek apakah user baru saja kembali dari Google
+function handleGoogleCallback() {
+  const hash = window.location.hash;
+  if (!hash || !hash.includes('id_token')) return;
+
+  const params = new URLSearchParams(hash.substring(1));
+  const idToken = params.get('id_token');
+
+  if (idToken) {
+    const payload = JSON.parse(atob(idToken.split('.')[1]));
+    const user = {
+      name: payload.name,
+      email: payload.email,
+      picture: payload.picture,
+      token: idToken
+    };
+    localStorage.setItem('em_user', JSON.stringify(user));
+
+    // Bersihkan URL dan redirect ke halaman utama
+    window.history.replaceState({}, document.title, window.location.pathname);
+    window.location.href = 'em_atelier_dashboard.html';
+  }
+}
+
+handleGoogleCallback();
+
+function showRegister(e) {
+  e.preventDefault();
+  document.getElementById('login-view').classList.remove('active');
+  document.getElementById('register-view').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showLogin(e) {
+  e.preventDefault();
+  document.getElementById('register-view').classList.remove('active');
+  document.getElementById('login-view').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function handleLogin() {
+  alert('Selamat datang kembali di Eternal Manuscript.');
+  window.location.href = 'em_atelier_dashboard.html';
+}
+
+function handleRegister() {
+  alert('Akun berhasil dibuat. Selamat datang di Eternal Manuscript.');
+  window.location.href = 'em_atelier_dashboard.html';
+}
+</script>
+
+</body>
+</html>
