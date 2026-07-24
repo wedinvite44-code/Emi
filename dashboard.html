@@ -1143,7 +1143,7 @@ function addToCalendar() {
 // ===== DOUBLE-TAP BACK BUTTON =====
 let backPressCount = 0;
 let backPressTimer = null;
-const BACK_PRESS_WINDOW = 2500; // 3.5 detik
+const BACK_PRESS_WINDOW = 2500;
 
 function handleBackButton(e) {
   const dash = document.getElementById('viewDashboard');
@@ -1159,20 +1159,17 @@ function handleBackButton(e) {
     history.pushState({ backIntercept: true }, '', location.href);
 
     backPressTimer = setTimeout(() => {
-      // Window 3.5 detik habis: reset counter, sembunyikan toast
+      // Lebih dari 2.5 detik: reset counter, sembunyikan toast (putar ulang)
       backPressCount = 0;
       toast.classList.remove('show');
     }, BACK_PRESS_WINDOW);
 
-  } else if (backPressCount >= 2) {
-    // Tap kedua: cek apakah masih dalam window
-    if (backPressCount === 2) {
-      // Langsung keluar (tap kedua dalam window)
-      clearTimeout(backPressTimer);
-      backPressCount = 0;
-      document.getElementById('toastBack').classList.remove('show');
-      logout();
-    }
+  } else if (backPressCount === 2) {
+    // Tap kedua dalam 2.5 detik: langsung keluar
+    clearTimeout(backPressTimer);
+    backPressCount = 0;
+    document.getElementById('toastBack').classList.remove('show');
+    logout();
   }
 }
 
