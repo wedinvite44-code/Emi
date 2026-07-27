@@ -447,56 +447,68 @@
   /* Bottom Navigation Bar */
   .em-bottom-nav {
     position: fixed;
-    bottom: 0;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
-    width: 100%;
-    max-width: 420px;
-    background: rgba(250,250,248,0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border-light);
-    display: flex;
+    width: calc(100% - 32px);
+    max-width: 380px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 20px;
+    display: none;
     justify-content: space-around;
     align-items: center;
-    padding: 8px 0 16px;
+    padding: 8px 6px 8px;
     z-index: 100;
-    box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
   }
   .em-bottom-nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
+    gap: 3px;
+    padding: 4px 6px;
     cursor: pointer;
     background: none;
     border: none;
-    font-family: inherit;
-    transition: all 0.3s;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     color: var(--text-secondary);
+    position: relative;
+    flex: 1;
+    border-radius: 12px;
   }
-  .em-bottom-nav-item:hover,
+  .em-bottom-nav-item:hover {
+    color: var(--accent);
+    background: rgba(184,149,106,0.06);
+  }
   .em-bottom-nav-item.active {
     color: var(--accent);
   }
   .em-bottom-nav-item svg {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     stroke: currentColor;
     fill: none;
-    stroke-width: 1.5;
+    stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .em-bottom-nav-item:hover svg {
+    transform: scale(1.08);
   }
   .em-bottom-nav-label {
     font-size: 9px;
     font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-transform: capitalize;
+    font-family: 'Inter', sans-serif;
   }
   .em-bottom-nav-spacer {
-    height: 60px;
+    height: 64px;
   }
 
 </style>
@@ -808,7 +820,32 @@
           </div>
         </div>
       </div>
+      <div class="em-bottom-nav-spacer"></div>
     </div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="em-bottom-nav" id="bottomNav">
+    <button class="em-bottom-nav-item" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <span class="em-bottom-nav-label">Menu</span>
+    </button>
+    <button class="em-bottom-nav-item" onclick="openSettings()">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="em-bottom-nav-label">Pengaturan</span>
+    </button>
+    <button class="em-bottom-nav-item" onclick="scrollToPreview()">
+      <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="em-bottom-nav-label">Pratinjau</span>
+    </button>
+    <button class="em-bottom-nav-item" id="navActivate" onclick="toggleActivation()">
+      <svg viewBox="0 0 24 24" id="navActivateIcon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span class="em-bottom-nav-label" id="navActivateLabel">Aktivasi</span>
+    </button>
+    <button class="em-bottom-nav-item" onclick="shareInvitation()">
+      <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      <span class="em-bottom-nav-label">Sebar</span>
+    </button>
   </div>
 </div>
 <script>
@@ -1333,8 +1370,63 @@ function updateBottomNav() {
   if (!nav) return;
   if (detail && !detail.classList.contains('em-hidden')) {
     nav.style.display = 'flex';
+    updateActivateButton();
   } else {
     nav.style.display = 'none';
+  }
+}
+
+function updateActivateButton() {
+  const inv = getInvitations().find(i => i.id === viewingId);
+  const label = document.getElementById('navActivateLabel');
+  const icon = document.getElementById('navActivateIcon');
+  if (!inv || !label || !icon) return;
+
+  if (inv.status === 'published') {
+    label.textContent = 'Aktif';
+    icon.innerHTML = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
+    document.getElementById('navActivate').classList.add('active');
+  } else {
+    label.textContent = 'Aktivasi';
+    icon.innerHTML = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
+    document.getElementById('navActivate').classList.remove('active');
+  }
+}
+
+function openSettings() {
+  showToast('Pengaturan akan segera hadir');
+}
+
+function scrollToPreview() {
+  const content = document.getElementById('emContent');
+  const preview = document.querySelector('.em-phone-wrap');
+  if (content && preview) {
+    content.scrollTo({ top: preview.offsetTop - 80, behavior: 'smooth' });
+  }
+}
+
+function toggleActivation() {
+  if (!viewingId) return;
+  const invitations = getInvitations();
+  const idx = invitations.findIndex(i => i.id === viewingId);
+  if (idx === -1) return;
+
+  const newStatus = invitations[idx].status === 'published' ? 'draft' : 'published';
+  invitations[idx].status = newStatus;
+  invitations[idx].updatedAt = new Date().toISOString();
+  saveInvitations(invitations);
+  updateActivateButton();
+
+  if (newStatus === 'published') {
+    showToast('Undangan berhasil diaktifkan & diterbitkan');
+  } else {
+    showToast('Undangan dikembalikan ke draf');
+  }
+
+  // Refresh detail view status if visible
+  const detailStatus = document.querySelector('.em-inv-card-status');
+  if (detailStatus) {
+    // Re-render dashboard on next visit
   }
 }
 
@@ -1370,6 +1462,7 @@ function init() {
   }
 
   renderDashboard();
+  updateBottomNav();
   setupBackButton();
 }
 
