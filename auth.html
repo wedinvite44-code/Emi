@@ -296,7 +296,7 @@ body {
           <label>Email</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-            <input type="email" placeholder="anda@email.com" required>
+            <input type="email" id="login-email" placeholder="anda@email.com" required>
           </div>
         </div>
 
@@ -307,7 +307,7 @@ body {
           </div>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
-            <input type="password" placeholder="••••••••" required>
+            <input type="password" id="login-password" placeholder="••••••••" required>
           </div>
         </div>
 
@@ -347,7 +347,7 @@ body {
           <label>Email</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-            <input type="email" placeholder="anda@email.com" required>
+            <input type="email" id="register-email" placeholder="anda@email.com" required>
           </div>
         </div>
 
@@ -355,7 +355,7 @@ body {
           <label>Kata Sandi</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
-            <input type="password" placeholder="••••••••" required>
+            <input type="password" id="register-password" placeholder="••••••••" required>
           </div>
         </div>
 
@@ -363,7 +363,7 @@ body {
           <label>Konfirmasi Kata Sandi</label>
           <div class="input-wrap">
             <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
-            <input type="password" placeholder="••••••••" required>
+            <input type="password" id="register-confirm" placeholder="••••••••" required>
           </div>
         </div>
 
@@ -383,6 +383,47 @@ body {
 // GANTI CLIENT_ID DI BAWAH INI SETELAH DAFTAR
 // ============================================
 const GOOGLE_CLIENT_ID = '192555486809-7e15vljkntgt4hjjcmkpoht3l52jeiqa.apps.googleusercontent.com';
+
+// ============================================
+// LOCAL AUTH SYSTEM (Login / Register)
+// ============================================
+const EM_USERS_KEY = 'em_registered_users';
+
+function getRegisteredUsers() {
+  try { return JSON.parse(localStorage.getItem(EM_USERS_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+
+function saveRegisteredUsers(users) {
+  localStorage.setItem(EM_USERS_KEY, JSON.stringify(users));
+}
+
+function isUserRegistered(email) {
+  const users = getRegisteredUsers();
+  return !!users[email.toLowerCase().trim()];
+}
+
+function validateLogin(email, password) {
+  const users = getRegisteredUsers();
+  const user = users[email.toLowerCase().trim()];
+  if (!user) return { ok: false, msg: 'Email belum terdaftar. Silakan daftar terlebih dahulu.' };
+  if (user.password !== password) return { ok: false, msg: 'Kata sandi salah.' };
+  return { ok: true };
+}
+
+function registerUser(email, password) {
+  const users = getRegisteredUsers();
+  const key = email.toLowerCase().trim();
+  if (users[key]) return { ok: false, msg: 'Email sudah terdaftar. Silakan masuk.' };
+  users[key] = { email: key, password: password, createdAt: new Date().toISOString() };
+  saveRegisteredUsers(users);
+  return { ok: true };
+}
+
+function setUserSession(email, name) {
+  const user = { email: email, name: name || email.split('@')[0] };
+  localStorage.setItem('em_user', JSON.stringify(user));
+}
 
 // ============================================
 // OAUTH 2.0 REDIRECT FLOW (FULL SCREEN)
@@ -453,10 +494,39 @@ function showLogin(e) {
 }
 
 function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) {
+    alert('Mohon isi email dan kata sandi.');
+    return;
+  }
+  const result = validateLogin(email, password);
+  if (!result.ok) {
+    alert(result.msg);
+    return;
+  }
+  setUserSession(email);
   window.location.href = 'dashboard.html';
 }
 
 function handleRegister() {
+  const email = document.getElementById('register-email').value.trim();
+  const password = document.getElementById('register-password').value;
+  const confirm = document.getElementById('register-confirm').value;
+  if (!email || !password || !confirm) {
+    alert('Mohon lengkapi semua field.');
+    return;
+  }
+  if (password !== confirm) {
+    alert('Kata sandi dan konfirmasi tidak cocok.');
+    return;
+  }
+  const result = registerUser(email, password);
+  if (!result.ok) {
+    alert(result.msg);
+    return;
+  }
+  setUserSession(email);
   window.location.href = 'dashboard.html';
 }
 </script>
