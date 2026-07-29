@@ -1026,10 +1026,8 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
   startCountdown(targetDate);
 
   // Couple
-  const brideDisplay = data.brideFull || data.bride || 'Dewi';
-  const groomDisplay = data.groomFull || data.groom || 'Arya';
-  document.getElementById('brideName').textContent = brideDisplay;
-  document.getElementById('groomName').textContent = groomDisplay;
+  document.getElementById('brideName').textContent = data.brideFull || data.bride || 'Dewi';
+  document.getElementById('groomName').textContent = data.groomFull || data.groom || 'Arya';
   document.getElementById('brideParents').innerHTML = 'Putri dari<br>' + escapeHtml(data.brideParents || 'Bapak & Ibu');
   document.getElementById('groomParents').innerHTML = 'Putra dari<br>' + escapeHtml(data.groomParents || 'Bapak & Ibu');
 
@@ -1187,18 +1185,46 @@ function copyBankNumber(btn) {
 
 // ===== SCROLL REVEAL =====
 const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-}, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  entries.forEach(entry => { 
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.05 });
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-// Fallback: force visible after 2 seconds untuk browser yang bermasalah dengan observer
-setTimeout(() => {
-  document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
-}, 2000);
+// Fallback: reveal elements already in viewport or near it
+function revealVisibleElements() {
+  document.querySelectorAll('.reveal').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    // If element is in or near viewport
+    if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
+      el.classList.add('visible');
+    }
+  });
+}
 
 // ===== INIT =====
 renderInvitation();
+
+// Ensure elements are revealed even if IntersectionObserver fails
+// Call multiple times with increasing delays for reliability
+setTimeout(revealVisibleElements, 50);
+setTimeout(revealVisibleElements, 200);
+setTimeout(revealVisibleElements, 600);
+
+// Also reveal on scroll as extra safety
+let scrollRevealTick = false;
+window.addEventListener('scroll', () => {
+  if (!scrollRevealTick) {
+    requestAnimationFrame(() => {
+      revealVisibleElements();
+      scrollRevealTick = false;
+    });
+    scrollRevealTick = true;
+  }
+}, { passive: true });
 </script>
 </body>
 </html>
