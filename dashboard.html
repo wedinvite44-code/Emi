@@ -3675,8 +3675,69 @@ function copyRsvpLink() {
 function viewAsGuest() {
   const inv = getInvitations().find(i => i.id === viewingId);
   if (!inv) return;
-  const url = 'invitation.html?id=' + encodeURIComponent(viewingId);
-  window.open(url, '_blank');
+
+  const isEditing = document.getElementById('viewAtelier') && 
+                    !document.getElementById('viewAtelier').classList.contains('em-hidden');
+
+  let previewData = { ...inv };
+
+  if (isEditing) {
+    previewData = {
+      ...inv,
+      bride: document.getElementById('inputBride').value || inv.bride,
+      brideFull: document.getElementById('inputBrideFull').value || inv.brideFull,
+      brideParents: document.getElementById('inputBrideParents').value || inv.brideParents,
+      bridePhoto: currentBridePhoto || inv.bridePhoto,
+      groom: document.getElementById('inputGroom').value || inv.groom,
+      groomFull: document.getElementById('inputGroomFull').value || inv.groomFull,
+      groomParents: document.getElementById('inputGroomParents').value || inv.groomParents,
+      groomPhoto: currentGroomPhoto || inv.groomPhoto,
+      labelTop: document.getElementById('inputLabelTop').value || inv.labelTop,
+      greetingTitle: document.getElementById('inputGreetingTitle').value || inv.greetingTitle,
+      openingMsg: document.getElementById('inputOpeningMsg').value || inv.openingMsg,
+      quote: document.getElementById('inputQuote').value || inv.quote,
+      quoteRef: document.getElementById('inputQuoteRef').value || inv.quoteRef,
+      akad: {
+        date: document.getElementById('inputAkadDate').value || (inv.akad ? inv.akad.date : ''),
+        start: document.getElementById('inputAkadStart').value || (inv.akad ? inv.akad.start : ''),
+        end: document.getElementById('inputAkadEnd').value || (inv.akad ? inv.akad.end : ''),
+        locName: document.getElementById('inputAkadLocName').value || (inv.akad ? inv.akad.locName : ''),
+        address: document.getElementById('inputAkadAddress').value || (inv.akad ? inv.akad.address : ''),
+        maps: document.getElementById('inputAkadMaps').value || (inv.akad ? inv.akad.maps : '')
+      },
+      resepsi: {
+        date: document.getElementById('inputResepsiDate').value || (inv.resepsi ? inv.resepsi.date : ''),
+        start: document.getElementById('inputResepsiStart').value || (inv.resepsi ? inv.resepsi.start : ''),
+        end: document.getElementById('inputResepsiEnd').value || (inv.resepsi ? inv.resepsi.end : ''),
+        locName: document.getElementById('inputResepsiLocName').value || (inv.resepsi ? inv.resepsi.locName : ''),
+        address: document.getElementById('inputResepsiAddress').value || (inv.resepsi ? inv.resepsi.address : ''),
+        maps: document.getElementById('inputResepsiMaps').value || (inv.resepsi ? inv.resepsi.maps : '')
+      },
+      gallery: galleryPhotos.length > 0 ? galleryPhotos : (inv.gallery || []),
+      rsvpEnabled: document.getElementById('toggleRsvp').classList.contains('active'),
+      banks: (() => {
+        const cards = document.querySelectorAll('.em-bank-card');
+        const banks = [];
+        cards.forEach(card => {
+          banks.push({
+            name: card.querySelector('.bank-name').value || '',
+            number: card.querySelector('.bank-number').value || '',
+            holder: card.querySelector('.bank-holder').value || ''
+          });
+        });
+        return banks.length > 0 ? banks : (inv.banks || []);
+      })(),
+      qrEnabled: document.getElementById('toggleQr').classList.contains('active'),
+      closingLabel: document.getElementById('inputClosingLabel').value || inv.closingLabel,
+      closingTitle: document.getElementById('inputClosingTitle').value || inv.closingTitle,
+      closingDesc: document.getElementById('inputClosingDesc').value || inv.closingDesc,
+      thankYou: document.getElementById('inputThankYou').value || inv.thankYou,
+      closingNames: document.getElementById('inputClosingNames').value || inv.closingNames
+    };
+  }
+
+  renderGuestView(previewData);
+  goTo('guest');
 }
 
 function renderGuestView(inv) {

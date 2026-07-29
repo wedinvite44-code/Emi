@@ -970,6 +970,24 @@ function parseIndonesianDate(dateStr) {
 }
 
 // ===== RENDER INVITATION =====
+function initReveals() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight + 100) {
+      el.classList.add('visible');
+    }
+  });
+}
+
 function renderInvitation() {
   const invId = getUrlParam('id');
   const guestName = getUrlParam('to') || 'Bapak/Ibu/Saudara/i';
@@ -985,7 +1003,6 @@ function renderInvitation() {
     currentInvId = inv.id;
   }
 
-  // Default data jika tidak ada di storage
   const data = inv || {
     labelTop: 'UNDANGAN PERNIKAHAN',
     greetingTitle: 'Dengan Hormat',
@@ -1013,218 +1030,141 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
     closingNames: 'Arya & Dewi'
   };
 
-  // Hero
-  document.getElementById('heroLabel').textContent = data.labelTop || 'UNDANGAN PERNIKAHAN';
-  document.getElementById('heroGuest').innerHTML = 'Kepada Yth.<br><strong>' + escapeHtml(guestName) + '</strong>';
-  document.getElementById('heroTitle').textContent = data.greetingTitle || 'Dengan Hormat';
-  document.getElementById('heroOpening').textContent = data.openingMsg || '';
+  const setText = (id, text) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text || '';
+  };
+  const setHtml = (id, html) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html || '';
+  };
 
-  // Countdown
+  setText('heroLabel', data.labelTop || 'UNDANGAN PERNIKAHAN');
+  setHtml('heroGuest', 'Kepada Yth.<br><strong>' + escapeHtml(guestName) + '</strong>');
+  setText('heroTitle', data.greetingTitle || 'Dengan Hormat');
+  setText('heroOpening', data.openingMsg || '');
+
   let targetDate = new Date(2026, 7, 14, 8, 0, 0);
   if (data.akad && data.akad.date) targetDate = parseIndonesianDate(data.akad.date);
   else if (data.resepsi && data.resepsi.date) targetDate = parseIndonesianDate(data.resepsi.date);
   startCountdown(targetDate);
 
-  // Couple
-  document.getElementById('brideName').textContent = data.brideFull || data.bride || 'Dewi';
-  document.getElementById('groomName').textContent = data.groomFull || data.groom || 'Arya';
-  document.getElementById('brideParents').innerHTML = 'Putri dari<br>' + escapeHtml(data.brideParents || 'Bapak & Ibu');
-  document.getElementById('groomParents').innerHTML = 'Putra dari<br>' + escapeHtml(data.groomParents || 'Bapak & Ibu');
+  setText('brideName', data.brideFull || data.bride || 'Dewi');
+  setText('groomName', data.groomFull || data.groom || 'Arya');
+  setHtml('brideParents', 'Putri dari<br>' + escapeHtml(data.brideParents || 'Bapak & Ibu'));
+  setHtml('groomParents', 'Putra dari<br>' + escapeHtml(data.groomParents || 'Bapak & Ibu'));
 
   const bp = document.getElementById('bridePhoto');
-  if (data.bridePhoto) { bp.src = data.bridePhoto; bp.classList.remove('em-hidden'); }
-  else { bp.classList.add('em-hidden'); }
+  if (bp) {
+    if (data.bridePhoto) { bp.src = data.bridePhoto; bp.classList.remove('em-hidden'); }
+    else { bp.classList.add('em-hidden'); }
+  }
   const gp = document.getElementById('groomPhoto');
-  if (data.groomPhoto) { gp.src = data.groomPhoto; gp.classList.remove('em-hidden'); }
-  else { gp.classList.add('em-hidden'); }
-
-  // Quote
-  const qs = document.getElementById('quoteSection');
-  if (data.quote) {
-    qs.classList.remove('em-hidden');
-    document.getElementById('quoteText').textContent = '"' + data.quote + '"';
-    document.getElementById('quoteRef').textContent = data.quoteRef || '';
-  } else {
-    qs.classList.add('em-hidden');
+  if (gp) {
+    if (data.groomPhoto) { gp.src = data.groomPhoto; gp.classList.remove('em-hidden'); }
+    else { gp.classList.add('em-hidden'); }
   }
 
-  // Events
+  const qs = document.getElementById('quoteSection');
+  if (qs) {
+    if (data.quote) {
+      qs.classList.remove('em-hidden');
+      setText('quoteText', '"' + data.quote + '"');
+      setText('quoteRef', data.quoteRef || '');
+    } else {
+      qs.classList.add('em-hidden');
+    }
+  }
+
   if (data.akad) {
-    document.getElementById('akadDate').textContent = data.akad.date || '';
-    document.getElementById('akadTime').textContent = (data.akad.start || '') + ' - ' + (data.akad.end || '') + ' WIB';
-    document.getElementById('akadLoc').textContent = data.akad.locName || '';
-    document.getElementById('akadAddr').textContent = data.akad.address || '';
+    setText('akadDate', data.akad.date || '');
+    setText('akadTime', (data.akad.start || '') + ' - ' + (data.akad.end || '') + ' WIB');
+    setText('akadLoc', data.akad.locName || '');
+    setText('akadAddr', data.akad.address || '');
     const am = document.getElementById('akadMaps');
-    if (data.akad.maps) { am.href = data.akad.maps; am.style.display = 'inline-flex'; }
-    else { am.style.display = 'none'; }
+    if (am) {
+      if (data.akad.maps) { am.href = data.akad.maps; am.style.display = 'inline-flex'; }
+      else { am.style.display = 'none'; }
+    }
   }
   if (data.resepsi) {
-    document.getElementById('resepsiDate').textContent = data.resepsi.date || '';
-    document.getElementById('resepsiTime').textContent = (data.resepsi.start || '') + ' - ' + (data.resepsi.end || '') + ' WIB';
-    document.getElementById('resepsiLoc').textContent = data.resepsi.locName || '';
-    document.getElementById('resepsiAddr').textContent = data.resepsi.address || '';
+    setText('resepsiDate', data.resepsi.date || '');
+    setText('resepsiTime', (data.resepsi.start || '') + ' - ' + (data.resepsi.end || '') + ' WIB');
+    setText('resepsiLoc', data.resepsi.locName || '');
+    setText('resepsiAddr', data.resepsi.address || '');
     const rm = document.getElementById('resepsiMaps');
-    if (data.resepsi.maps) { rm.href = data.resepsi.maps; rm.style.display = 'inline-flex'; }
-    else { rm.style.display = 'none'; }
+    if (rm) {
+      if (data.resepsi.maps) { rm.href = data.resepsi.maps; rm.style.display = 'inline-flex'; }
+      else { rm.style.display = 'none'; }
+    }
   }
 
-  // Gallery
   const gs = document.getElementById('gallerySection');
   const gg = document.getElementById('galleryGrid');
-  if (data.gallery && data.gallery.length > 0) {
-    gs.classList.remove('em-hidden');
-    let html = '';
-    data.gallery.forEach((photo, idx) => {
-      const featured = idx === 0 ? 'em-gallery-featured' : '';
-      html += '<img class="' + featured + '" src="' + photo + '" alt="">';
-    });
-    gg.innerHTML = html;
-  } else {
-    gs.classList.add('em-hidden');
+  if (gs && gg) {
+    if (data.gallery && data.gallery.length > 0) {
+      gs.classList.remove('em-hidden');
+      let html = '';
+      data.gallery.forEach((photo, idx) => {
+        const featured = idx === 0 ? 'em-gallery-featured' : '';
+        html += '<img class="' + featured + '" src="' + photo + '" alt="">';
+      });
+      gg.innerHTML = html;
+    } else {
+      gs.classList.add('em-hidden');
+    }
   }
 
-  // RSVP
   const rsvpSec = document.getElementById('rsvpSection');
-  if (data.rsvpEnabled) { rsvpSec.classList.remove('em-hidden'); }
-  else { rsvpSec.classList.add('em-hidden'); }
+  if (rsvpSec) {
+    if (data.rsvpEnabled) { rsvpSec.classList.remove('em-hidden'); }
+    else { rsvpSec.classList.add('em-hidden'); }
+  }
 
-  // Banks
   const bs = document.getElementById('bankSection');
   const bl = document.getElementById('bankList');
-  if (data.banks && data.banks.length > 0) {
-    bs.classList.remove('em-hidden');
-    let html = '';
-    data.banks.forEach(bank => {
-      html += `
-        <div class="em-bank">
-          <div class="em-bank-logo">${bank.name ? bank.name.substring(0,3).toUpperCase() : 'BNK'}</div>
-          <div class="em-bank-info">
-            <div class="em-bank-number">${bank.number || ''}</div>
-            <div class="em-bank-holder">a.n. ${bank.holder || ''}</div>
-          </div>
-          <button class="em-bank-copy" onclick="copyBankNumber(this)">Salin</button>
-        </div>`;
-    });
-    bl.innerHTML = html;
-  } else {
-    bs.classList.add('em-hidden');
+  if (bs && bl) {
+    if (data.banks && data.banks.length > 0) {
+      bs.classList.remove('em-hidden');
+      let html = '';
+      data.banks.forEach(bank => {
+        html += `
+          <div class="em-bank">
+            <div class="em-bank-logo">${(bank.name || 'BNK').substring(0,3).toUpperCase()}</div>
+            <div class="em-bank-info">
+              <div class="em-bank-number">${bank.number || ''}</div>
+              <div class="em-bank-holder">a.n. ${bank.holder || ''}</div>
+            </div>
+            <button class="em-bank-copy" onclick="copyBankNumber(this)">Salin</button>
+          </div>`;
+      });
+      bl.innerHTML = html;
+    } else {
+      bs.classList.add('em-hidden');
+    }
   }
 
-  // QR
   const qrSec = document.getElementById('qrSection');
-  if (data.qrEnabled) {
-    qrSec.classList.remove('em-hidden');
-    document.getElementById('qrLabel').textContent = data.closingLabel || 'Scan QR Code';
-    document.getElementById('qrTitle').textContent = data.closingTitle || 'Check-in Tamu';
-    document.getElementById('qrDesc').textContent = data.closingDesc || '';
-  } else {
-    qrSec.classList.add('em-hidden');
+  if (qrSec) {
+    if (data.qrEnabled) {
+      qrSec.classList.remove('em-hidden');
+      setText('qrLabel', data.closingLabel || 'Scan QR Code');
+      setText('qrTitle', data.closingTitle || 'Check-in Tamu');
+      setText('qrDesc', data.closingDesc || '');
+    } else {
+      qrSec.classList.add('em-hidden');
+    }
   }
 
-  // Closing
-  document.getElementById('closingText').textContent = '"' + (data.thankYou || 'Terima kasih atas doa dan kehadiran Anda.') + '"';
+  setText('closingText', '"' + (data.thankYou || 'Terima kasih atas doa dan kehadiran Anda.') + '"');
   const closeNames = data.closingNames || (data.groomFull || data.groom || 'Arya') + ' & ' + (data.brideFull || data.bride || 'Dewi');
   const cnParts = closeNames.split(/[&\-]/);
-  document.getElementById('closeBride').textContent = (cnParts[0] || data.groomFull || data.groom || 'Arya').trim();
-  document.getElementById('closeGroom').textContent = (cnParts[1] || data.brideFull || data.bride || 'Dewi').trim();
+  setText('closeBride', (cnParts[0] || data.groomFull || data.groom || 'Arya').trim());
+  setText('closeGroom', (cnParts[1] || data.brideFull || data.bride || 'Dewi').trim());
 }
 
-function escapeHtml(text) {
-  if (!text) return '';
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-// ===== RSVP =====
-function openRsvpModal() {
-  document.getElementById('rsvpModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeRsvpModal(e) {
-  if (e && e.target !== document.getElementById('rsvpModal')) return;
-  document.getElementById('rsvpModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function submitRsvp() {
-  const name = document.getElementById('rsvpName').value.trim();
-  const guests = document.getElementById('rsvpGuests').value;
-  const attend = document.querySelector('input[name="rsvpAttend"]:checked');
-  const message = document.getElementById('rsvpMessage').value.trim();
-
-  if (!name) {
-    showToast('Mohon isi nama lengkap');
-    return;
-  }
-
-  const rsvpKey = 'em_rsvp_' + (currentInvId || 'default');
-  let rsvps = JSON.parse(localStorage.getItem(rsvpKey) || '[]');
-  rsvps.push({
-    id: 'guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5),
-    name, guests: parseInt(guests) || 1,
-    attend: attend ? attend.value : 'hadir',
-    message, timestamp: new Date().toISOString()
-  });
-  localStorage.setItem(rsvpKey, JSON.stringify(rsvps));
-
-  closeRsvpModal();
-  showToast('Konfirmasi kehadiran berhasil dikirim!');
-  document.getElementById('rsvpName').value = '';
-  document.getElementById('rsvpGuests').value = '1';
-  document.getElementById('rsvpMessage').value = '';
-}
-
-function copyBankNumber(btn) {
-  const number = btn.parentElement.querySelector('.em-bank-number').textContent.replace(/\s/g, '');
-  navigator.clipboard.writeText(number).then(() => {
-    showToast('Nomor rekening disalin');
-  }).catch(() => {
-    showToast('Gagal menyalin');
-  });
-}
-
-// ===== SCROLL REVEAL =====
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => { 
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
-  });
-}, { threshold: 0.05 });
-
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-// Fallback: reveal elements already in viewport or near it
-function revealVisibleElements() {
-  document.querySelectorAll('.reveal').forEach(el => {
-    const rect = el.getBoundingClientRect();
-    // If element is in or near viewport
-    if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
-      el.classList.add('visible');
-    }
-  });
-}
-
-// ===== INIT =====
 renderInvitation();
-
-// Ensure elements are revealed even if IntersectionObserver fails
-// Call multiple times with increasing delays for reliability
-setTimeout(revealVisibleElements, 50);
-setTimeout(revealVisibleElements, 200);
-setTimeout(revealVisibleElements, 600);
-
-// Also reveal on scroll as extra safety
-let scrollRevealTick = false;
-window.addEventListener('scroll', () => {
-  if (!scrollRevealTick) {
-    requestAnimationFrame(() => {
-      revealVisibleElements();
-      scrollRevealTick = false;
-    });
-    scrollRevealTick = true;
-  }
-}, { passive: true });
+initReveals();
 </script>
 </body>
 </html>
