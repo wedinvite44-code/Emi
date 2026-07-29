@@ -263,6 +263,92 @@ body {
   .main { padding-top: 4rem; }
   .form-card { padding: 2rem; }
 }
+
+/* Custom Alert Modal */
+.em-alert-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,26,0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.em-alert-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.em-alert-box {
+  background: var(--color-cream);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 20px;
+  padding: 40px 32px 32px;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  transform: scale(0.92) translateY(12px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+}
+.em-alert-overlay.open .em-alert-box {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+.em-alert-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: var(--color-gold);
+}
+.em-alert-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.em-alert-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--color-charcoal);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.em-alert-msg {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+.em-alert-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-dark-green);
+  color: var(--color-cream);
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.35s ease;
+}
+.em-alert-btn:hover {
+  background: var(--color-charcoal);
+  transform: translateY(-1px);
+}
 </style>
 </head>
 <body>
@@ -493,16 +579,25 @@ function showLogin(e) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function showAlert(msg, title) {
+  document.getElementById('alertMsg').textContent = msg;
+  document.getElementById('alertTitle').textContent = title || 'Perhatian';
+  document.getElementById('alertModal').classList.add('open');
+}
+function closeAlertModal(e) {
+  if (e && e.target !== document.getElementById('alertModal')) return;
+  document.getElementById('alertModal').classList.remove('open');
+}
 function handleLogin() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   if (!email || !password) {
-    alert('Mohon isi email dan kata sandi.');
+    showAlert('Mohon isi email dan kata sandi.');
     return;
   }
   const result = validateLogin(email, password);
   if (!result.ok) {
-    alert(result.msg);
+    showAlert(result.msg);
     return;
   }
   setUserSession(email);
@@ -514,16 +609,16 @@ function handleRegister() {
   const password = document.getElementById('register-password').value;
   const confirm = document.getElementById('register-confirm').value;
   if (!email || !password || !confirm) {
-    alert('Mohon lengkapi semua field.');
+    showAlert('Mohon lengkapi semua field.');
     return;
   }
   if (password !== confirm) {
-    alert('Kata sandi dan konfirmasi tidak cocok.');
+    showAlert('Kata sandi dan konfirmasi tidak cocok.');
     return;
   }
   const result = registerUser(email, password);
   if (!result.ok) {
-    alert(result.msg);
+    showAlert(result.msg);
     return;
   }
   setUserSession(email);
@@ -531,5 +626,17 @@ function handleRegister() {
 }
 </script>
 
+
+<!-- Custom Alert Modal -->
+<div class="em-alert-overlay" id="alertModal" onclick="closeAlertModal(event)">
+  <div class="em-alert-box" onclick="event.stopPropagation()">
+    <div class="em-alert-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="em-alert-title" id="alertTitle">Perhatian</div>
+    <div class="em-alert-msg" id="alertMsg">Pesan</div>
+    <button class="em-alert-btn" onclick="closeAlertModal()">Oke</button>
+  </div>
+</div>
 </body>
 </html>
