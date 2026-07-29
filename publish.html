@@ -1688,55 +1688,63 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
   }
 
   function shareTo(platform) {
-    const inv = getCurrentInvitation();
-    const coupleName = inv ? (inv.title || inv.bride + ' & ' + inv.groom) : document.getElementById('coupleName').textContent || 'Amara & Surya';
-    const slug = coupleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const url = 'https://eternal-manuscript.id/' + (slug || 'undangan');
+    try {
+      const inv = getCurrentInvitation();
+      const coupleName = inv ? (inv.title || inv.bride + ' & ' + inv.groom) : document.getElementById('coupleName').textContent || 'Amara & Surya';
+      const slug = coupleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const url = 'https://eternal-manuscript.id/' + (slug || 'undangan');
 
-    // Ambil deskripsi dari textarea
-    const description = document.getElementById('descTextarea').value.trim();
+      // Ambil deskripsi dari textarea
+      const descEl = document.getElementById('descTextarea');
+      let shareText = '';
+      if (descEl && descEl.value.trim()) {
+        shareText = descEl.value.trim();
+      } else {
+        shareText = 'Undangan Pernikahan ' + coupleName;
+      }
 
-    // Gunakan deskripsi jika ada, fallback ke default
-    const shareText = description || ('Undangan Pernikahan ' + coupleName);
+      let shareUrl = '';
+      switch(platform) {
+        case 'whatsapp':
+          shareUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + '\n\n' + url);
+          break;
+        case 'telegram':
+          shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(shareText);
+          break;
+        case 'facebook':
+          shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+          break;
+        case 'x':
+          shareUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(url);
+          break;
+        case 'email':
+          shareUrl = 'mailto:?subject=' + encodeURIComponent('Undangan Pernikahan ' + coupleName) + '&body=' + encodeURIComponent(shareText + '\n\n' + url);
+          break;
+        case 'copy':
+          const copyContent = shareText + '\n\n' + url;
+          navigator.clipboard.writeText(copyContent).then(() => {
+            showToast('Pesan & tautan disalin ke clipboard');
+          }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = copyContent;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast('Pesan & tautan disalin ke clipboard');
+          });
+          return;
+      }
 
-    switch(platform) {
-      case 'whatsapp':
-        window.open('https://wa.me/?text=' + encodeURIComponent(shareText + '
-
-' + url), '_blank');
-        break;
-      case 'telegram':
-        window.open('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(shareText), '_blank');
-        break;
-      case 'facebook':
-        // Facebook hanya bisa share URL (limitasi API)
-        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank');
-        break;
-      case 'x':
-        window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(url), '_blank');
-        break;
-      case 'email':
-        window.open('mailto:?subject=' + encodeURIComponent('Undangan Pernikahan ' + coupleName) + '&body=' + encodeURIComponent(shareText + '
-
-' + url), '_blank');
-        break;
-      case 'copy':
-        navigator.clipboard.writeText(shareText + '
-
-' + url).then(() => {
-          showToast('Pesan & tautan disalin ke clipboard');
-        }).catch(() => {
-          const ta = document.createElement('textarea');
-          ta.value = shareText + '
-
-' + url;
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand('copy');
-          document.body.removeChild(ta);
-          showToast('Pesan & tautan disalin ke clipboard');
-        });
-        break;
+      if (shareUrl) {
+        const newWindow = window.open(shareUrl, '_blank');
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          showToast('Popup diblokir. Silakan izinkan popup untuk situs ini.');
+        }
+      }
+    } catch (err) {
+      console.error('Share error:', err);
+      showToast('Gagal membuka share. Coba salin link manual.');
     }
   }
 
