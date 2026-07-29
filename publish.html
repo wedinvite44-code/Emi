@@ -1676,9 +1676,20 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     window.location.href = 'dashboard.html';
   }
 
+  // Global variable to store current invitation for sharing
+  let currentInvitationId = null;
+
+  function getCurrentInvitation() {
+    if (currentInvitationId) {
+      const invitations = getInvitations();
+      return invitations.find(i => i.id === currentInvitationId);
+    }
+    return null;
+  }
+
   function shareTo(platform) {
-    const inv = getInvitations().find(i => i.id === viewingId);
-    const coupleName = inv ? (inv.title || inv.bride + ' & ' + inv.groom) : 'Amara & Surya';
+    const inv = getCurrentInvitation();
+    const coupleName = inv ? (inv.title || inv.bride + ' & ' + inv.groom) : document.getElementById('coupleName').textContent || 'Amara & Surya';
     const slug = coupleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const url = 'https://eternal-manuscript.id/' + (slug || 'undangan');
     const text = 'Undangan Pernikahan ' + coupleName;
@@ -1731,6 +1742,9 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     }
 
     if (!inv) return;
+
+    // Store for sharing functions
+    currentInvitationId = inv.id;
 
     document.getElementById('coupleName').textContent = inv.title || (inv.bride + ' & ' + inv.groom);
     document.getElementById('previewBride').textContent = inv.bride || 'Amara';
