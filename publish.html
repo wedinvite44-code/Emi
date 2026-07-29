@@ -1692,36 +1692,49 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     const coupleName = inv ? (inv.title || inv.bride + ' & ' + inv.groom) : document.getElementById('coupleName').textContent || 'Amara & Surya';
     const slug = coupleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const url = 'https://eternal-manuscript.id/' + (slug || 'undangan');
-    const text = 'Undangan Pernikahan ' + coupleName;
-    const fullText = text + ' — ' + url;
+
+    // Ambil deskripsi dari textarea
+    const description = document.getElementById('descTextarea').value.trim();
+
+    // Gunakan deskripsi jika ada, fallback ke default
+    const shareText = description || ('Undangan Pernikahan ' + coupleName);
 
     switch(platform) {
       case 'whatsapp':
-        window.open('https://wa.me/?text=' + encodeURIComponent(fullText), '_blank');
+        window.open('https://wa.me/?text=' + encodeURIComponent(shareText + '
+
+' + url), '_blank');
         break;
       case 'telegram':
-        window.open('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text), '_blank');
+        window.open('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(shareText), '_blank');
         break;
       case 'facebook':
+        // Facebook hanya bisa share URL (limitasi API)
         window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank');
         break;
       case 'x':
-        window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank');
+        window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(url), '_blank');
         break;
       case 'email':
-        window.open('mailto:?subject=' + encodeURIComponent(text) + '&body=' + encodeURIComponent('Halo, kami mengundang Anda ke pernikahan kami. Lihat undangan lengkap di: ' + url), '_blank');
+        window.open('mailto:?subject=' + encodeURIComponent('Undangan Pernikahan ' + coupleName) + '&body=' + encodeURIComponent(shareText + '
+
+' + url), '_blank');
         break;
       case 'copy':
-        navigator.clipboard.writeText(fullText).then(() => {
-          showToast('Tautan disalin ke clipboard');
+        navigator.clipboard.writeText(shareText + '
+
+' + url).then(() => {
+          showToast('Pesan & tautan disalin ke clipboard');
         }).catch(() => {
           const ta = document.createElement('textarea');
-          ta.value = fullText;
+          ta.value = shareText + '
+
+' + url;
           document.body.appendChild(ta);
           ta.select();
           document.execCommand('copy');
           document.body.removeChild(ta);
-          showToast('Tautan disalin ke clipboard');
+          showToast('Pesan & tautan disalin ke clipboard');
         });
         break;
     }
