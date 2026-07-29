@@ -974,32 +974,7 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.</div>
         <textarea class="em-desc-textarea" id="descTextarea" placeholder="Yth. [NAMA TAMU]
 Di Tempat
 
-Dengan segala kerendahan hati, kami mengundang...">Yth. [NAMA TAMU]
-Di Tempat
------------
-Dengan segala kerendahan hati, kami mengundang Bapak/Ibu/Saudara/i dan teman-teman untuk menghadiri acara,
-===========
-The Wedding of Ican Pratama & Faiza Rahmawati
-===========
-Pada: Akad Nikah
-🗓️ Tanggal: Jumat, 15 Agustus 2026
-🕛 Pukul: 08:00 - 10:00 WIB
-📍 Lokasi: Masjid Al-Ikhlas
-
-Pada: Resepsi
-🗓️ Tanggal: Jumat, 15 Agustus 2026
-🕛 Pukul: 11:00 - 15:00 WIB
-📍 Lokasi: Gedung Serba Guna Bhakti
-
-Link undangan bisa diakses lengkap di:
-https://wedinvite44-code.github.io/wedinvite/invitation.html?to=Elsa
-
-Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir di acara kami
-Mohon maaf perihal undangan hanya di bagikan melalui pesan ini
-Terima kasih banyak atas perhatiannya
-
-Note:
-Untuk mendapatkan hasil yg bagus, harap buka melalui google chrome terupdate dan matikan mode gelap dari hp</textarea>
+Dengan segala kerendahan hati, kami mengundang..."></textarea>
         <div class="em-desc-actions">
           <button class="em-ai-box" onclick="openAiDescModal()">
             <span class="em-ai-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2L13.5 9.5L21 12L13.5 14.5L12 22L10.5 14.5L3 12L10.5 9.5Z"/></svg></span>
@@ -1678,9 +1653,14 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
   function applyDesc(idx) {
     const template = DESC_TEMPLATES[idx];
     if (!template) return;
-    document.getElementById('descTextarea').value = template;
+    const inv = getCurrentInvitation();
+    if (inv) {
+      document.getElementById('descTextarea').value = parseDescriptionTemplate(template, inv);
+    } else {
+      document.getElementById('descTextarea').value = template;
+    }
     closeAiDescModal();
-    showToast('Deskripsi diterapkan. Silakan sesuaikan data mempelai & acara.');
+    showToast('Deskripsi diterapkan. Silakan sesuaikan nama tamu sebelum dibagikan.');
   }
 
   // Load data from most recent invitation or from dashboard navigation
@@ -1705,10 +1685,13 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
   let currentInvitationId = null;
 
   function getCurrentInvitation() {
+    const invitations = getInvitations();
     if (currentInvitationId) {
-      const invitations = getInvitations();
-      return invitations.find(i => i.id === currentInvitationId);
+      const found = invitations.find(i => i.id === currentInvitationId);
+      if (found) return found;
     }
+    // Fallback: return first invitation if any
+    if (invitations.length > 0) return invitations[0];
     return null;
   }
 
