@@ -907,54 +907,15 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.</div>
 
   <div class="em-content" id="emContent">
     <div class="em-publish" id="viewPublish">
-      <button class="em-back" onclick="history.back()">
+      <button class="em-back" onclick="goBackToDashboard()">
         <svg width="14" height="14" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        Kembali
+        Kembali ke Dasbor
       </button>
 
+      
       <div class="em-label">Terbitkan & Bagikan</div>
       <h1 class="em-title" id="coupleName">Amara & Surya</h1>
       <div class="em-subtitle">Kelola status publikasi dan bagikan undangan kepada tamu.</div>
-
-      <!-- Phone Preview -->
-      <div class="em-phone-wrap">
-        <div class="em-phone">
-          <div class="em-phone-inner">
-            <div class="em-phone-theme" id="previewTheme">The Botanical</div>
-            <div class="em-phone-flower">❀</div>
-            <div class="em-phone-sub">— bersama keluarga —</div>
-            <div class="em-phone-name" id="previewBride">Amara</div>
-            <div class="em-phone-ampersand">&</div>
-            <div class="em-phone-name" id="previewGroom">Surya</div>
-            <div class="em-phone-line"></div>
-            <div class="em-phone-dash">—</div>
-            <div class="em-phone-loc" id="previewLoc">Villa Tuscany, Bali</div>
-            <div class="em-phone-msg" id="previewMsg">Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.</div>
-            <div class="em-phone-rsvp">RSVP · ETERNAL MANUSCRIPT</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Status -->
-      <div class="em-section">
-        <div class="em-section-header">
-          <div class="em-section-title">Status</div>
-          <div class="em-badge" id="statusBadge">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            TERBIT
-          </div>
-        </div>
-        <div class="em-section-desc" id="statusDesc">Undangan aktif & dapat diakses tamu.</div>
-        <button class="em-btn-dark" id="statusBtn" onclick="toggleStatus()">JADIKAN DRAF</button>
-      </div>
-
-      <!-- Lihat Sebagai Tamu -->
-      <div class="em-section">
-        <button class="em-btn-outline" onclick="viewAsGuest()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          LIHAT SEBAGAI TAMU
-        </button>
-      </div>
 
       <!-- Description Form -->
       <div class="em-section">
@@ -1003,47 +964,11 @@ Untuk mendapatkan hasil yg bagus, harap buka melalui google chrome terupdate dan
           </button>
         </div>
       </div>
-
-      <!-- RSVP Link -->
-      <div class="em-section">
-        <div class="em-section-title" style="margin-bottom:4px">Tautan RSVP</div>
-        <div class="em-section-desc">Bagikan tautan ini kepada tamu untuk konfirmasi kehadiran.</div>
-        <div class="em-link-row">
-          <input class="em-link-input" type="text" value="https://preview--eternal-script-studio.vercel.app/amara-surya" readonly id="linkInput">
-          <button class="em-btn-accent" id="copyBtn" onclick="copyLink()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span id="copyText">SALIN</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="em-section" style="text-align:center">
-        <button class="em-btn-outline" onclick="viewAsGuest()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          LIHAT SEBAGAI TAMU
-        </button>
-        <button class="em-btn-outline" style="margin-bottom:0" onclick="goToDashboardEdit()">EDIT UNDANGAN</button>
-      </div>
-
-      <!-- Save Date -->
-      <div class="em-section">
-        <div class="em-calendar-box">
-          <div class="em-calendar-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-          <div>
-            <div class="em-calendar-title">Simpan Tanggal</div>
-            <div class="em-calendar-desc">Tamu yang membuka undangan dapat menambahkan tanggal pernikahan langsung ke Google Calendar mereka dengan satu sentuhan.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
   <!-- Bottom Navigation Bar -->
   <div class="em-bottom-nav" id="bottomNav">
-    <a href="dashboard.html" class="em-bottom-nav-item" onclick="localStorage.setItem('em_nav_target','menu')">
+    <a href="dashboard.html" class="em-bottom-nav-item" onclick="goBackToDashboard(); return false;">
       <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       <span class="em-bottom-nav-label">Menu</span>
     </a>
@@ -1051,7 +976,7 @@ Untuk mendapatkan hasil yg bagus, harap buka melalui google chrome terupdate dan
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span class="em-bottom-nav-label">Pengaturan</span>
     </button>
-    <button class="em-bottom-nav-item" onclick="scrollToPreview()">
+    <button class="em-bottom-nav-item" onclick="showToast('Pratinjau tidak tersedia')">
       <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
       <span class="em-bottom-nav-label">Pratinjau</span>
     </button>
@@ -1586,14 +1511,6 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     });
   }
 
-  function scrollToPreview() {
-    const content = document.getElementById('emContent');
-    const preview = document.querySelector('.em-phone-wrap');
-    if (content && preview) {
-      content.scrollTo({ top: preview.offsetTop - 80, behavior: 'smooth' });
-    }
-  }
-
   function viewAsGuest() {
     const invitations = getInvitations();
     const currentId = localStorage.getItem('em_current_invitation');
@@ -1618,7 +1535,14 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
 
   function goToDashboardEdit() {
     const invitations = getInvitations();
-    const inv = invitations[0];
+    const currentId = localStorage.getItem('em_current_invitation');
+    let inv = null;
+    if (currentId) {
+      inv = invitations.find(i => i.id === currentId);
+    }
+    if (!inv && invitations.length > 0) {
+      inv = invitations[0];
+    }
     if (inv) {
       localStorage.setItem('em_goto_edit', inv.id);
     }
@@ -1653,6 +1577,23 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
   }
 
   // Load data from most recent invitation or from dashboard navigation
+  function goBackToDashboard() {
+    const invitations = getInvitations();
+    const currentId = localStorage.getItem('em_current_invitation');
+    let inv = null;
+    if (currentId) {
+      inv = invitations.find(i => i.id === currentId);
+      localStorage.removeItem('em_current_invitation');
+    }
+    if (!inv && invitations.length > 0) {
+      inv = invitations[0];
+    }
+    if (inv) {
+      localStorage.setItem('em_goto_detail', inv.id);
+    }
+    window.location.href = 'dashboard.html';
+  }
+
   function loadInvitationData() {
     const invitations = getInvitations();
     const currentId = localStorage.getItem('em_current_invitation');
@@ -1663,7 +1604,7 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
       localStorage.removeItem('em_current_invitation');
     }
 
-    if (!inv) {
+    if (!inv && invitations.length > 0) {
       inv = invitations[0];
     }
 
