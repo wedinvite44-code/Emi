@@ -1511,6 +1511,31 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
     catch(e) { return []; }
   }
+  function getInvitationUrl(inv) {
+    const baseUrl = window.location.origin + window.location.pathname.replace('publish.html', 'invitation.html');
+    return baseUrl + '?id=' + encodeURIComponent(inv.id);
+  }
+
+  function parseDescriptionTemplate(template, inv) {
+    const url = getInvitationUrl(inv);
+    const brideName = inv.brideFull || inv.bride || 'Mempelai Wanita';
+    const groomName = inv.groomFull || inv.groom || 'Mempelai Pria';
+    const coupleName = inv.title || (groomName + ' & ' + brideName);
+
+    return template
+      .replace(/\[MEMPELAI WANITA\]/g, brideName)
+      .replace(/\[MEMPELAI PRIA\]/g, groomName)
+      .replace(/\[MEMPELAI\]/g, coupleName)
+      .replace(/\[TANGGAL AKAD\]/g, inv.akad?.date || '-')
+      .replace(/\[WAKTU AKAD\]/g, (inv.akad?.start || '-') + ' - ' + (inv.akad?.end || '-') + ' WIB')
+      .replace(/\[LOKASI AKAD\]/g, inv.akad?.locName || '-')
+      .replace(/\[TANGGAL RESEPSI\]/g, inv.resepsi?.date || '-')
+      .replace(/\[WAKTU RESEPSI\]/g, (inv.resepsi?.start || '-') + ' - ' + (inv.resepsi?.end || '-') + ' WIB')
+      .replace(/\[LOKASI RESEPSI\]/g, inv.resepsi?.locName || '-')
+      .replace(/\[HARI\]/g, '')
+      .replace(/\[LINK UNDANGAN\]/g, url);
+  }
+
 
   function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
@@ -1691,42 +1716,53 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     try {
       const inv = getCurrentInvitation();
       const coupleName = inv ? (inv.title || inv.bride + ' & ' + inv.groom) : document.getElementById('coupleName').textContent || 'Amara & Surya';
-      const slug = coupleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      const url = 'https://eternal-manuscript.id/' + (slug || 'undangan');
+      const url = inv ? getInvitationUrl(inv) : '';
 
-      // Ambil deskripsi dari textarea
+      // Ambil deskripsi dari textarea (sudah terisi otomatis dengan data & link)
       const descEl = document.getElementById('descTextarea');
       let shareText = '';
       if (descEl && descEl.value.trim()) {
         shareText = descEl.value.trim();
       } else {
         shareText = 'Undangan Pernikahan ' + coupleName;
+        if (url) shareText += '\n\n' + url;
+      }
+
+      // Extract URL from description text for platforms that need separate URL param
+      const urlMatch = shareText.match(/(https?:\/\/[^\s]+)/);
+      const extractedUrl = urlMatch ? urlMatch[1] : url;
+
+      // Clean text without URL for platforms that handle URL separately
+      let textOnly = shareText;
+      if (extractedUrl) {
+        textOnly = shareText.replace(extractedUrl, '').trim();
+        textOnly = textOnly.replace(/\n{3,}/g, '\n\n');
       }
 
       let shareUrl = '';
       switch(platform) {
         case 'whatsapp':
-          shareUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText + '\n\n' + url);
+          // Send full text with embedded URL so it appears at the correct position
+          shareUrl = 'https://wa.me/?text=' + encodeURIComponent(shareText);
           break;
         case 'telegram':
-          shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(shareText);
+          shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(extractedUrl || '') + '&text=' + encodeURIComponent(textOnly);
           break;
         case 'facebook':
-          shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+          shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(extractedUrl || '');
           break;
         case 'x':
-          shareUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(url);
+          shareUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(textOnly) + '&url=' + encodeURIComponent(extractedUrl || '');
           break;
         case 'email':
-          shareUrl = 'mailto:?subject=' + encodeURIComponent('Undangan Pernikahan ' + coupleName) + '&body=' + encodeURIComponent(shareText + '\n\n' + url);
+          shareUrl = 'mailto:?subject=' + encodeURIComponent('Undangan Pernikahan ' + coupleName) + '&body=' + encodeURIComponent(shareText);
           break;
         case 'copy':
-          const copyContent = shareText + '\n\n' + url;
-          navigator.clipboard.writeText(copyContent).then(() => {
+          navigator.clipboard.writeText(shareText).then(() => {
             showToast('Pesan & tautan disalin ke clipboard');
           }).catch(() => {
             const ta = document.createElement('textarea');
-            ta.value = copyContent;
+            ta.value = shareText;
             document.body.appendChild(ta);
             ta.select();
             document.execCommand('copy');
@@ -1773,6 +1809,11 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     document.getElementById('previewLoc').textContent = inv.location || 'Villa Tuscany, Bali';
     document.getElementById('previewMsg').textContent = inv.message || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
     document.getElementById('previewTheme').textContent = 'The ' + (inv.template || 'Botanical');
+
+    // Auto-fill description textarea with parsed template using actual invitation data
+    const defaultTemplate = DESC_TEMPLATES[0];
+    const filledDesc = parseDescriptionTemplate(defaultTemplate, inv);
+    document.getElementById('descTextarea').value = filledDesc;
 
     currentStatus = inv.status || 'published';
     if (currentStatus === 'draft') {
