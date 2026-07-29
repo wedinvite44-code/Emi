@@ -3675,8 +3675,8 @@ function copyRsvpLink() {
 function viewAsGuest() {
   const inv = getInvitations().find(i => i.id === viewingId);
   if (!inv) return;
-  renderGuestView(inv);
-  goTo('guest');
+  const url = 'invitation.html?id=' + encodeURIComponent(viewingId);
+  window.open(url, '_blank');
 }
 
 function renderGuestView(inv) {
