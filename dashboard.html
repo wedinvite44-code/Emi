@@ -3235,8 +3235,33 @@ function handlePhotoUpload(input) {
   reader.readAsDataURL(file);
 }
 
+
+// ===== SYNC HIDDEN INPUTS =====
+function syncHiddenInputs() {
+  // Sync date from akad/resepsi
+  const akadDate = document.getElementById('inputAkadDate').value;
+  const resepsiDate = document.getElementById('inputResepsiDate').value;
+  document.getElementById('inputDate').value = akadDate || resepsiDate || '';
+
+  // Sync location from akad/resepsi
+  const akadLoc = document.getElementById('inputAkadLocName').value;
+  const resepsiLoc = document.getElementById('inputResepsiLocName').value;
+  document.getElementById('inputLoc').value = akadLoc || resepsiLoc || '';
+
+  // Sync title from bride & groom
+  const bride = document.getElementById('inputBride').value || 'Amara';
+  const groom = document.getElementById('inputGroom').value || 'Surya';
+  document.getElementById('inputTitle').value = bride + ' & ' + groom;
+
+  // Sync message from openingMsg
+  document.getElementById('inputMsg').value = document.getElementById('inputOpeningMsg').value || '';
+}
+
 // ===== SAVE INVITATION =====
 function saveInvitation(status) {
+  // Sync hidden inputs first to ensure data consistency
+  syncHiddenInputs();
+
   const editId = document.getElementById('editId').value;
   const bride = document.getElementById('inputBride').value || 'Amara';
   const groom = document.getElementById('inputGroom').value || 'Surya';
@@ -4327,6 +4352,14 @@ function toggleActivation() {
 }
 
 function init() {
+  // Auto-sync hidden inputs when form fields change
+  const syncFields = ['inputBride', 'inputGroom', 'inputAkadDate', 'inputResepsiDate', 
+                      'inputAkadLocName', 'inputResepsiLocName', 'inputOpeningMsg'];
+  syncFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', syncHiddenInputs);
+  });
+
   const user = JSON.parse(localStorage.getItem('em_user') || '{}');
   if (user.name) {
     document.getElementById('userName').textContent = user.name.split(' ')[0];
