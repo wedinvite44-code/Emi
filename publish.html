@@ -948,6 +948,14 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.</div>
         <button class="em-btn-dark" id="statusBtn" onclick="toggleStatus()">JADIKAN DRAF</button>
       </div>
 
+      <!-- Lihat Sebagai Tamu -->
+      <div class="em-section">
+        <button class="em-btn-outline" onclick="viewAsGuest()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          LIHAT SEBAGAI TAMU
+        </button>
+      </div>
+
       <!-- Description Form -->
       <div class="em-section">
         <div class="em-section-header">
@@ -1587,9 +1595,19 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
   }
 
   function viewAsGuest() {
+    const invitations = getInvitations();
+    const currentId = localStorage.getItem('em_current_invitation');
+    let inv = null;
+    if (currentId) {
+      inv = invitations.find(i => i.id === currentId);
+    }
+    if (!inv && invitations.length > 0) {
+      inv = invitations[0];
+    }
+    const guestUrl = inv ? 'guest.html?id=' + inv.id : 'guest.html';
     showToast('Membuka tampilan tamu...');
     setTimeout(() => {
-      window.open('guest.html', '_blank');
+      window.open(guestUrl, '_blank');
     }, 400);
   }
 
@@ -1634,10 +1652,21 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     showToast('Deskripsi diterapkan. Silakan sesuaikan data mempelai & acara.');
   }
 
-  // Load data from most recent invitation
+  // Load data from most recent invitation or from dashboard navigation
   function loadInvitationData() {
     const invitations = getInvitations();
-    const inv = invitations[0];
+    const currentId = localStorage.getItem('em_current_invitation');
+    let inv = null;
+
+    if (currentId) {
+      inv = invitations.find(i => i.id === currentId);
+      localStorage.removeItem('em_current_invitation');
+    }
+
+    if (!inv) {
+      inv = invitations[0];
+    }
+
     if (!inv) return;
 
     document.getElementById('coupleName').textContent = inv.title || (inv.bride + ' & ' + inv.groom);
