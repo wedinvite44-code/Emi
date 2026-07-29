@@ -3183,20 +3183,14 @@ function goTo(view) {
 function updatePreview() {
   const n1 = document.getElementById('inputBride').value || 'Amara';
   const n2 = document.getElementById('inputGroom').value || 'Surya';
-  // Fallback to akad/resepsi dates if hidden inputs are empty
-  let d = document.getElementById('inputDate').value;
-  if (!d) {
-    const akadDate = document.getElementById('inputAkadDate').value;
-    const resepsiDate = document.getElementById('inputResepsiDate').value;
-    d = akadDate || resepsiDate || '12 · 07 · 2026';
-  }
-  let l = document.getElementById('inputLoc').value;
-  if (!l) {
-    const akadLoc = document.getElementById('inputAkadLocName').value;
-    const resepsiLoc = document.getElementById('inputResepsiLocName').value;
-    l = akadLoc || resepsiLoc || 'Villa Tuscany, Bali';
-  }
-  const m = document.getElementById('inputMsg').value || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
+  // Ambil langsung dari field acara
+  const akadDate = document.getElementById('inputAkadDate').value;
+  const resepsiDate = document.getElementById('inputResepsiDate').value;
+  const d = akadDate || resepsiDate || '12 · 07 · 2026';
+  const akadLoc = document.getElementById('inputAkadLocName').value;
+  const resepsiLoc = document.getElementById('inputResepsiLocName').value;
+  const l = akadLoc || resepsiLoc || 'Villa Tuscany, Bali';
+  const m = document.getElementById('inputOpeningMsg').value || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
   document.getElementById('previewBride').textContent = n1;
   document.getElementById('previewGroom').textContent = n2;
   document.getElementById('previewDate').textContent = d;
@@ -3259,16 +3253,21 @@ function syncHiddenInputs() {
 
 // ===== SAVE INVITATION =====
 function saveInvitation(status) {
-  // Sync hidden inputs first to ensure data consistency
-  syncHiddenInputs();
-
   const editId = document.getElementById('editId').value;
   const bride = document.getElementById('inputBride').value || 'Amara';
   const groom = document.getElementById('inputGroom').value || 'Surya';
-  const title = document.getElementById('inputTitle').value || (bride + ' & ' + groom);
-  const date = document.getElementById('inputDate').value || '12 · 07 · 2026';
-  const loc = document.getElementById('inputLoc').value || 'Villa Tuscany, Bali';
-  const msg = document.getElementById('inputMsg').value || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
+
+  // Ambil date & loc langsung dari field acara (tidak pakai hidden inputs)
+  const akadDate = document.getElementById('inputAkadDate').value;
+  const resepsiDate = document.getElementById('inputResepsiDate').value;
+  const date = akadDate || resepsiDate || '12 · 07 · 2026';
+
+  const akadLoc = document.getElementById('inputAkadLocName').value;
+  const resepsiLoc = document.getElementById('inputResepsiLocName').value;
+  const loc = akadLoc || resepsiLoc || 'Villa Tuscany, Bali';
+
+  const title = bride + ' & ' + groom;
+  const msg = document.getElementById('inputOpeningMsg').value || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
 
   // Collect bank accounts
   const bankCards = document.querySelectorAll('.em-bank-card');
@@ -3627,8 +3626,10 @@ function viewInvitation(id) {
   document.getElementById('detailTheme').textContent = 'The ' + (inv.template || 'Botanical');
   document.getElementById('detailBride').textContent = inv.bride || 'Amara';
   document.getElementById('detailGroom').textContent = inv.groom || 'Surya';
-  document.getElementById('detailDate').textContent = inv.date || '12 · 07 · 2026';
-  document.getElementById('detailLoc').textContent = inv.location || 'Villa Tuscany, Bali';
+  const detailDate = inv.date || (inv.akad && inv.akad.date) || (inv.resepsi && inv.resepsi.date) || '12 · 07 · 2026';
+  const detailLoc = inv.location || (inv.akad && inv.akad.locName) || (inv.resepsi && inv.resepsi.locName) || 'Villa Tuscany, Bali';
+  document.getElementById('detailDate').textContent = detailDate;
+  document.getElementById('detailLoc').textContent = detailLoc;
   document.getElementById('detailMsg').textContent = inv.message || '';
   document.getElementById('detailIconWrap').innerHTML = '<svg><use href="#' + (inv.templateIcon || 'icon-botanical') + '"/></svg>';
 
