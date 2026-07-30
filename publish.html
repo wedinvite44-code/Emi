@@ -468,8 +468,8 @@
     <ul class="em-nav">
       <li><a href="index.html" data-view="home"><span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-home"/></svg></span>Beranda</a></li>
       <li><a href="dashboard.html" data-view="dashboard"><span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-dashboard"/></svg></span>Dasbor</a></li>
-      <li><a href="dashboard.html" data-view="atelier" onclick="localStorage.setItem('em_goto_atelier','1'); toggleSidebar(); return false;"><span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-plus-circle"/></svg></span>Buat Undangan</a></li>
-      <li><a href="dashboard.html" data-view="guestlist" onclick="localStorage.setItem('em_goto_guestlist','1'); toggleSidebar(); return false;"><span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-users"/></svg></span>Daftar Tamu</a></li>
+      <li><a href="dashboard.html" data-view="atelier" onclick="localStorage.setItem('em_goto_atelier','1'); toggleSidebar(); window.location.href='dashboard.html'; return false;"><span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-plus-circle"/></svg></span>Buat Undangan</a></li>
+      <li><a href="dashboard.html" data-view="guestlist" onclick="localStorage.setItem('em_goto_guestlist','1'); toggleSidebar(); window.location.href='dashboard.html'; return false;"><span class="em-nav-icon"><svg width="18" height="18"><use href="#icon-users"/></svg></span>Daftar Tamu</a></li>
     </ul>
     <div class="em-sidebar-footer">
       <div class="em-sidebar-email" id="sidebarEmail">codereli37@gmail.com</div>
@@ -1004,6 +1004,24 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.</div>
       <!-- Description Form -->
       <div class="em-section">
         <div class="em-section-header">
+          <div class="em-section-title">Nama Tamu</div>
+        </div>
+        <div class="em-section-desc">Masukkan nama tamu untuk personalisasi undangan. Nama ini akan muncul di cover dan halaman undangan.</div>
+        <div class="em-form-group" style="margin-bottom: 12px;">
+          <input type="text" class="em-link-input" id="guestNameInput" placeholder="Contoh: Bapak Ahmad & Ibu Siti" style="width: 100%; margin-bottom: 10px;" oninput="updateGuestName()">
+        </div>
+        <div class="em-link-row" style="align-items: stretch;">
+          <input type="text" class="em-link-input" id="guestUrlInput" value="" readonly style="min-width: 0; font-size: 11px;">
+          <button class="em-btn-accent" onclick="copyGuestUrl()" style="padding: 10px 14px; font-size: 9px; letter-spacing: 1.5px; white-space: nowrap; flex-shrink: 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copyGuestText">Salin</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nama Tamu -->
+      <div class="em-section">
+        <div class="em-section-header">
           <div class="em-section-title">Deskripsi Pesan</div>
         </div>
         <div class="em-section-desc">Tulis pesan undangan yang akan dibagikan ke tamu via WhatsApp, SMS, atau media lainnya.</div>
@@ -1020,24 +1038,6 @@ Dengan segala kerendahan hati, kami mengundang..."></textarea>
           <button class="em-btn-accent" onclick="copyDescription()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             <span id="copyDescText">Salin Pesan</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Nama Tamu -->
-      <div class="em-section">
-        <div class="em-section-header">
-          <div class="em-section-title">Nama Tamu</div>
-        </div>
-        <div class="em-section-desc">Masukkan nama tamu untuk personalisasi undangan. Nama ini akan muncul di cover dan halaman undangan.</div>
-        <div class="em-form-group" style="margin-bottom: 12px;">
-          <input type="text" class="em-link-input" id="guestNameInput" placeholder="Contoh: Bapak Ahmad & Ibu Siti" style="width: 100%; margin-bottom: 10px;" oninput="updateGuestName()">
-        </div>
-        <div class="em-link-row" style="align-items: stretch;">
-          <input type="text" class="em-link-input" id="guestUrlInput" value="" readonly style="min-width: 0; font-size: 11px;">
-          <button class="em-btn-accent" onclick="copyGuestUrl()" style="padding: 10px 14px; font-size: 9px; letter-spacing: 1.5px; white-space: nowrap; flex-shrink: 0;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span id="copyGuestText">Salin</span>
           </button>
         </div>
       </div>

@@ -4392,6 +4392,11 @@ function init() {
     localStorage.removeItem('em_goto_atelier');
     createNewInvitation();
   }
+  const gotoGuestlist = localStorage.getItem('em_goto_guestlist');
+  if (gotoGuestlist) {
+    localStorage.removeItem('em_goto_guestlist');
+    openGuestListFromSidebar();
+  }
   const gotoEditId = localStorage.getItem('em_goto_edit');
   if (gotoEditId) {
     localStorage.removeItem('em_goto_edit');
