@@ -1897,6 +1897,7 @@
     font-size: 14px;
     color: var(--text-primary);
     background: transparent;
+    cursor: pointer;
   }
   input[type="date"].em-input::-webkit-calendar-picker-indicator,
   input[type="time"].em-input::-webkit-calendar-picker-indicator {
@@ -1904,6 +1905,7 @@
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.2s;
+    padding: 4px;
   }
   input[type="date"].em-input::-webkit-calendar-picker-indicator:hover,
   input[type="time"].em-input::-webkit-calendar-picker-indicator:hover {
@@ -1921,8 +1923,7 @@
   input[type="date"].em-input::-webkit-datetime-edit-day-field,
   input[type="date"].em-input::-webkit-datetime-edit-year-field,
   input[type="time"].em-input::-webkit-datetime-edit-hour-field,
-  input[type="time"].em-input::-webkit-datetime-edit-minute-field,
-  input[type="time"].em-input::-webkit-datetime-edit-ampm-field {
+  input[type="time"].em-input::-webkit-datetime-edit-minute-field {
     color: var(--text-primary);
   }
   /* Firefox */
@@ -2591,7 +2592,7 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Tanggal</label>
-              <input type="date" class="em-input em-input-sm" id="inputAkadDateRaw" onchange="formatDateDisplay('akad')">
+              <input type="date" class="em-input em-input-sm" id="inputAkadDatePicker" onchange="onDatePickerChange('akad')">
             <input type="hidden" id="inputAkadDate" value="Jumat, 14 Agustus 2026">
             </div>
             <div class="em-time-row">
@@ -2631,7 +2632,7 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Tanggal</label>
-              <input type="date" class="em-input em-input-sm" id="inputResepsiDateRaw" onchange="formatDateDisplay('resepsi')">
+              <input type="date" class="em-input em-input-sm" id="inputResepsiDatePicker" onchange="onDatePickerChange('resepsi')">
             <input type="hidden" id="inputResepsiDate" value="Sabtu, 15 Agustus 2026">
             </div>
             <div class="em-time-row">
@@ -3286,58 +3287,35 @@ function syncHiddenFields() {
 }
 
 // ===== DATE & TIME PICKER HELPERS =====
-const INDONESIAN_MONTHS = [
-  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-];
-const INDONESIAN_DAYS = [
-  'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'
-];
+const ID_MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const ID_DAYS = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 
-function formatDateDisplay(eventType) {
-  const rawId = eventType === 'akad' ? 'inputAkadDateRaw' : 'inputResepsiDateRaw';
-  const displayId = eventType === 'akad' ? 'inputAkadDate' : 'inputResepsiDate';
-  const rawVal = document.getElementById(rawId).value;
-
+function onDatePickerChange(eventType) {
+  const pickerId = eventType === 'akad' ? 'inputAkadDatePicker' : 'inputResepsiDatePicker';
+  const hiddenId = eventType === 'akad' ? 'inputAkadDate' : 'inputResepsiDate';
+  const rawVal = document.getElementById(pickerId).value;
   if (!rawVal) return;
-
-  const date = new Date(rawVal + 'T00:00:00');
-  const dayName = INDONESIAN_DAYS[date.getDay()];
-  const day = date.getDate();
-  const month = INDONESIAN_MONTHS[date.getMonth()];
-  const year = date.getFullYear();
-
-  const formatted = dayName + ', ' + day + ' ' + month + ' ' + year;
-  document.getElementById(displayId).value = formatted;
-
+  const d = new Date(rawVal + 'T00:00:00');
+  const formatted = ID_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + ID_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+  document.getElementById(hiddenId).value = formatted;
   syncHiddenFields();
   updatePreview();
 }
 
-function setDatePickerValue(eventType, dateStr) {
-  const rawId = eventType === 'akad' ? 'inputAkadDateRaw' : 'inputResepsiDateRaw';
-  const displayId = eventType === 'akad' ? 'inputAkadDate' : 'inputResepsiDate';
-
-  // Parse Indonesian date string like "Jumat, 14 Agustus 2026"
-  const months = {
-    'januari': 0, 'februari': 1, 'maret': 2, 'april': 3, 'mei': 4, 'juni': 5,
-    'juli': 6, 'agustus': 7, 'september': 8, 'oktober': 9, 'november': 10, 'desember': 11
-  };
-
-  const match = dateStr.toLowerCase().match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
-  if (match) {
-    const day = parseInt(match[1]);
-    const month = months[match[2]];
-    const year = parseInt(match[3]);
+function setDatePickerFromString(eventType, dateStr) {
+  const pickerId = eventType === 'akad' ? 'inputAkadDatePicker' : 'inputResepsiDatePicker';
+  const hiddenId = eventType === 'akad' ? 'inputAkadDate' : 'inputResepsiDate';
+  const monthsMap = { 'januari':0,'februari':1,'maret':2,'april':3,'mei':4,'juni':5,'juli':6,'agustus':7,'september':8,'oktober':9,'november':10,'desember':11 };
+  document.getElementById(hiddenId).value = dateStr || '';
+  if (!dateStr) { document.getElementById(pickerId).value = ''; return; }
+  const m = dateStr.toLowerCase().match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+  if (m) {
+    const day = parseInt(m[1]), month = monthsMap[m[2]], year = parseInt(m[3]);
     if (month !== undefined) {
       const d = new Date(year, month, day);
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const dd = String(d.getDate()).padStart(2, '0');
-      document.getElementById(rawId).value = yyyy + '-' + mm + '-' + dd;
+      document.getElementById(pickerId).value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
     }
   }
-  document.getElementById(displayId).value = dateStr;
 }
 
 
@@ -3572,9 +3550,9 @@ function resetAtelier() {
     if (el) el.value = val;
   }
 
-  // Set default date picker values
-  setDatePickerValue('akad', 'Jumat, 14 Agustus 2026');
-  setDatePickerValue('resepsi', 'Sabtu, 15 Agustus 2026');
+  // Initialize date pickers
+  setDatePickerFromString('akad', 'Jumat, 14 Agustus 2026');
+  setDatePickerFromString('resepsi', 'Sabtu, 15 Agustus 2026');
 
   updatePreview();
 }
@@ -3712,7 +3690,7 @@ function editInvitation(id) {
   // Event details
   if (inv.akad) {
     setVal('inputAkadDate', inv.akad.date);
-    setDatePickerValue('akad', inv.akad.date || '');
+    setDatePickerFromString('akad', inv.akad.date);
     setVal('inputAkadStart', inv.akad.start);
     setVal('inputAkadEnd', inv.akad.end);
     setVal('inputAkadLocName', inv.akad.locName);
@@ -3721,7 +3699,7 @@ function editInvitation(id) {
   }
   if (inv.resepsi) {
     setVal('inputResepsiDate', inv.resepsi.date);
-    setDatePickerValue('resepsi', inv.resepsi.date || '');
+    setDatePickerFromString('resepsi', inv.resepsi.date);
     setVal('inputResepsiStart', inv.resepsi.start);
     setVal('inputResepsiEnd', inv.resepsi.end);
     setVal('inputResepsiLocName', inv.resepsi.locName);
@@ -4503,9 +4481,9 @@ function init() {
     localStorage.removeItem('em_atelier_draft');
   }
 
-  // Initialize date pickers with default values
-  setDatePickerValue('akad', 'Jumat, 14 Agustus 2026');
-  setDatePickerValue('resepsi', 'Sabtu, 15 Agustus 2026');
+  // Initialize date pickers on first load
+  setDatePickerFromString('akad', 'Jumat, 14 Agustus 2026');
+  setDatePickerFromString('resepsi', 'Sabtu, 15 Agustus 2026');
 
   renderDashboard();
   updateBottomNav();
