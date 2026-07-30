@@ -2394,6 +2394,39 @@
     </div>
   </div>
 
+  <!-- Place Picker Modal -->
+  <div class="em-confirm-overlay" id="placePickerOverlay" style="align-items:flex-end; z-index:150;">
+    <div class="em-confirm-box" style="width:100%; max-width:420px; max-height:85vh; padding:0; border-radius:20px 20px 0 0; text-align:left; overflow:hidden; display:flex; flex-direction:column;">
+      <!-- Header -->
+      <div style="padding:20px 20px 12px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:10;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="em-confirm-title" style="margin-bottom:0; font-size:20px;">Pilih Lokasi</div>
+          <button onclick="closePlacePicker()" style="background:none; border:none; font-size:22px; color:var(--text-secondary); cursor:pointer; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">&times;</button>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="placePickerSearch" placeholder="Cari lokasi..." style="flex:1; background:var(--preview-bg); border:1px solid var(--border); border-radius:10px; padding:10px 14px; font-size:14px; color:var(--text-primary); font-family:'Inter',sans-serif; outline:none;" onkeydown="if(event.key==='Enter')searchPlaces()">
+          <button onclick="searchPlaces()" style="background:var(--dark); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:12px; font-weight:500; letter-spacing:1px; text-transform:uppercase; cursor:pointer; font-family:inherit; white-space:nowrap;">Cari</button>
+        </div>
+      </div>
+
+      <!-- Results List -->
+      <div id="placePickerResults" style="flex:1; overflow-y:auto; padding:8px 0; max-height:50vh;">
+        <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+          <svg width="40" height="40" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div style="font-size:13px;">Ketik nama lokasi dan tekan Cari</div>
+        </div>
+      </div>
+
+      <!-- Selected Place Info -->
+      <div id="placePickerSelected" style="display:none; padding:16px 20px; border-top:1px solid var(--border); background:var(--preview-bg);">
+        <div style="font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:4px;">Lokasi Dipilih</div>
+        <div id="placePickerSelectedName" style="font-size:14px; font-weight:500; color:var(--text-primary); margin-bottom:2px;"></div>
+        <div id="placePickerSelectedAddress" style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;"></div>
+        <button onclick="confirmPlaceSelection()" style="width:100%; background:var(--dark); color:#fff; border:none; border-radius:10px; padding:12px; font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:inherit;">Gunakan Lokasi Ini</button>
+      </div>
+    </div>
+  </div>
+
   <div class="em-toast-back" id="toastBack">
     <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
     Ketuk sekali lagi untuk keluar
@@ -3039,35 +3072,7 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
     <!-- GUEST VIEW -->
 </div>
 
-    <!-- Place Picker Modal -->
-  <div class="em-confirm-overlay" id="placePickerOverlay" style="align-items:flex-end; z-index:150;" onclick="if(event.target===this)closePlacePicker()">
-    <div class="em-confirm-box" style="width:100%; max-width:420px; max-height:85vh; padding:0; border-radius:20px 20px 0 0; text-align:left; overflow:hidden; display:flex; flex-direction:column;">
-      <div style="padding:20px 20px 12px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:10;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <div class="em-confirm-title" style="margin-bottom:0; font-size:20px;">Pilih Lokasi</div>
-          <button onclick="closePlacePicker()" style="background:none; border:none; font-size:22px; color:var(--text-secondary); cursor:pointer; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">&times;</button>
-        </div>
-        <div style="display:flex; gap:8px;">
-          <input type="text" id="placePickerSearch" placeholder="Cari lokasi..." style="flex:1; background:var(--preview-bg); border:1px solid var(--border); border-radius:10px; padding:10px 14px; font-size:14px; color:var(--text-primary); font-family:'Inter',sans-serif; outline:none;" onkeydown="if(event.key==='Enter')searchPlaces()">
-          <button onclick="searchPlaces()" style="background:var(--dark); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:12px; font-weight:500; letter-spacing:1px; text-transform:uppercase; cursor:pointer; font-family:inherit; white-space:nowrap;">Cari</button>
-        </div>
-      </div>
-      <div id="placePickerResults" style="flex:1; overflow-y:auto; padding:8px 0; max-height:50vh;">
-        <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
-          <svg width="40" height="40" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <div style="font-size:13px;">Ketik nama lokasi dan tekan Cari</div>
-        </div>
-      </div>
-      <div id="placePickerSelected" style="display:none; padding:16px 20px; border-top:1px solid var(--border); background:var(--preview-bg);">
-        <div style="font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:4px;">Lokasi Dipilih</div>
-        <div id="placePickerSelectedName" style="font-size:14px; font-weight:500; color:var(--text-primary); margin-bottom:2px;"></div>
-        <div id="placePickerSelectedAddress" style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;"></div>
-        <button onclick="confirmPlaceSelection()" style="width:100%; background:var(--dark); color:#fff; border:none; border-radius:10px; padding:12px; font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:inherit;">Gunakan Lokasi Ini</button>
-      </div>
-    </div>
-  </div>
-
-<!-- Bottom Navigation Bar -->
+  <!-- Bottom Navigation Bar -->
 <div class="em-bottom-nav" id="bottomNav">
   <button class="em-bottom-nav-item" onclick="toggleSidebar()">
     <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -3265,16 +3270,12 @@ function syncHiddenFields() {
   const resepsiLoc = document.getElementById('inputResepsiLocName').value;
 
   // Sync date: use akad date first, fallback to resepsi date
-  if (akadDate || resepsiDate) {
-    document.getElementById('inputDate').value = akadDate || resepsiDate;
-  }
+  document.getElementById('inputDate').value = akadDate || resepsiDate || document.getElementById('inputDate').value;
   // Sync location: use resepsi loc first (usually the main venue), fallback to akad loc
-  if (resepsiLoc || akadLoc) {
-    document.getElementById('inputLoc').value = resepsiLoc || akadLoc;
-  }
+  document.getElementById('inputLoc').value = resepsiLoc || akadLoc || document.getElementById('inputLoc').value;
   // Also sync message from openingMsg if empty
   const openingMsg = document.getElementById('inputOpeningMsg').value;
-  if (openingMsg && !document.getElementById('inputMsg').value) {
+  if (openingMsg) {
     document.getElementById('inputMsg').value = openingMsg.split('\n')[0];
   }
 }
@@ -3321,7 +3322,7 @@ function saveInvitation(status) {
   const title = document.getElementById('inputTitle').value || (bride + ' & ' + groom);
   const date = document.getElementById('inputDate').value || '12 · 07 · 2026';
   const loc = document.getElementById('inputLoc').value || 'Villa Tuscany, Bali';
-  const msg = document.getElementById('inputMsg').value || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
+    const msg = document.getElementById('inputOpeningMsg').value || document.getElementById('inputMsg').value || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
 
   // Collect bank accounts
   const bankCards = document.querySelectorAll('.em-bank-card');
