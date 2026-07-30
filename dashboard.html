@@ -2512,7 +2512,7 @@
           </div>
           <div class="em-form-group reveal reveal-delay-1">
             <label class="em-form-label">Pesan Pembuka</label>
-            <textarea class="em-textarea" rows="4" id="inputOpeningMsg">Assalamu'alaikum Warahmatullahi Wabarakatuh
+            <textarea class="em-textarea" rows="4" id="inputOpeningMsg" oninput="syncHiddenFields()">Assalamu'alaikum Warahmatullahi Wabarakatuh
 
 Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada pernikahan putra-putri kami.</textarea>
           </div>
@@ -2546,7 +2546,7 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Tanggal</label>
-              <input type="text" class="em-input" id="inputAkadDate" value="Jumat, 14 Agustus 2026" placeholder="Jumat, 14 Agustus 2026">
+              <input type="text" class="em-input" id="inputAkadDate" value="Jumat, 14 Agustus 2026" placeholder="Jumat, 14 Agustus 2026" oninput="syncHiddenFields(); updatePreview()">
             </div>
             <div class="em-time-row">
               <div class="em-form-group">
@@ -2560,7 +2560,7 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Nama Lokasi</label>
-              <input type="text" class="em-input em-input-sm" id="inputAkadLocName" value="Masjid Al-Ikhlas" placeholder="Masjid Al-Ikhlas">
+              <input type="text" class="em-input em-input-sm" id="inputAkadLocName" value="Masjid Al-Ikhlas" placeholder="Masjid Al-Ikhlas" oninput="syncHiddenFields(); updatePreview()">
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Alamat Lengkap</label>
@@ -2579,7 +2579,7 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Tanggal</label>
-              <input type="text" class="em-input" id="inputResepsiDate" value="Sabtu, 15 Agustus 2026" placeholder="Sabtu, 15 Agustus 2026">
+              <input type="text" class="em-input" id="inputResepsiDate" value="Sabtu, 15 Agustus 2026" placeholder="Sabtu, 15 Agustus 2026" oninput="syncHiddenFields(); updatePreview()">
             </div>
             <div class="em-time-row">
               <div class="em-form-group">
@@ -2593,7 +2593,7 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Nama Lokasi</label>
-              <input type="text" class="em-input em-input-sm" id="inputResepsiLocName" value="Gedung Serba Guna Graha Cakra" placeholder="Gedung Serba Guna Graha Cakra">
+              <input type="text" class="em-input em-input-sm" id="inputResepsiLocName" value="Gedung Serba Guna Graha Cakra" placeholder="Gedung Serba Guna Graha Cakra" oninput="syncHiddenFields(); updatePreview()">
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Alamat Lengkap</label>
@@ -3204,6 +3204,28 @@ function updatePreview() {
   document.getElementById('previewMsg').textContent = m;
 }
 
+// Sync hidden inputDate/inputLoc with event form values for proper saving
+function syncHiddenFields() {
+  const akadDate = document.getElementById('inputAkadDate').value;
+  const resepsiDate = document.getElementById('inputResepsiDate').value;
+  const akadLoc = document.getElementById('inputAkadLocName').value;
+  const resepsiLoc = document.getElementById('inputResepsiLocName').value;
+
+  // Sync date: use akad date first, fallback to resepsi date
+  if (akadDate || resepsiDate) {
+    document.getElementById('inputDate').value = akadDate || resepsiDate;
+  }
+  // Sync location: use resepsi loc first (usually the main venue), fallback to akad loc
+  if (resepsiLoc || akadLoc) {
+    document.getElementById('inputLoc').value = resepsiLoc || akadLoc;
+  }
+  // Also sync message from openingMsg if empty
+  const openingMsg = document.getElementById('inputOpeningMsg').value;
+  if (openingMsg && !document.getElementById('inputMsg').value) {
+    document.getElementById('inputMsg').value = openingMsg.split('\n')[0];
+  }
+}
+
 function setTemplate(el, name, iconId) {
   document.querySelectorAll('.em-template').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
@@ -3237,6 +3259,9 @@ function handlePhotoUpload(input) {
 
 // ===== SAVE INVITATION =====
 function saveInvitation(status) {
+  // Sync hidden fields before saving to ensure all data is current
+  syncHiddenFields();
+
   const editId = document.getElementById('editId').value;
   const bride = document.getElementById('inputBride').value || 'Amara';
   const groom = document.getElementById('inputGroom').value || 'Surya';
@@ -3602,9 +3627,9 @@ function viewInvitation(id) {
   document.getElementById('detailTheme').textContent = 'The ' + (inv.template || 'Botanical');
   document.getElementById('detailBride').textContent = inv.bride || 'Amara';
   document.getElementById('detailGroom').textContent = inv.groom || 'Surya';
-  document.getElementById('detailDate').textContent = inv.date || '12 · 07 · 2026';
-  document.getElementById('detailLoc').textContent = inv.location || 'Villa Tuscany, Bali';
-  document.getElementById('detailMsg').textContent = inv.message || '';
+  document.getElementById('detailDate').textContent = inv.date || inv.akad?.date || inv.resepsi?.date || '12 · 07 · 2026';
+  document.getElementById('detailLoc').textContent = inv.location || inv.resepsi?.locName || inv.akad?.locName || 'Villa Tuscany, Bali';
+  document.getElementById('detailMsg').textContent = inv.message || inv.openingMsg || '';
   document.getElementById('detailIconWrap').innerHTML = '<svg><use href="#' + (inv.templateIcon || 'icon-botanical') + '"/></svg>';
 
   const dp = document.getElementById('detailPhoto');
