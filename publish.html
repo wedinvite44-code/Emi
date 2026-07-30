@@ -987,6 +987,24 @@ Dengan segala kerendahan hati, kami mengundang..."></textarea>
         </div>
       </div>
 
+      <!-- Nama Tamu -->
+      <div class="em-section">
+        <div class="em-section-header">
+          <div class="em-section-title">Nama Tamu</div>
+        </div>
+        <div class="em-section-desc">Masukkan nama tamu untuk personalisasi undangan. Nama ini akan muncul di cover dan halaman undangan.</div>
+        <div class="em-form-group" style="margin-bottom: 12px;">
+          <input type="text" class="em-link-input" id="guestNameInput" placeholder="Contoh: Bapak Ahmad & Ibu Siti" style="width: 100%; margin-bottom: 10px;" oninput="updateGuestName()">
+        </div>
+        <div class="em-link-row" style="align-items: stretch;">
+          <input type="text" class="em-link-input" id="guestUrlInput" value="" readonly style="min-width: 0; font-size: 11px;">
+          <button class="em-btn-accent" onclick="copyGuestUrl()" style="padding: 10px 14px; font-size: 9px; letter-spacing: 1.5px; white-space: nowrap; flex-shrink: 0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copyGuestText">Salin</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Sebar ke Sosial Media -->
       <div class="em-section">
         <div class="em-section-header">
@@ -1491,13 +1509,23 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     return baseUrl + '?id=' + encodeURIComponent(inv.id);
   }
 
-  function parseDescriptionTemplate(template, inv) {
-    const url = getInvitationUrl(inv);
+  function getInvitationUrlWithGuest(inv, guestName) {
+    const baseUrl = window.location.origin + window.location.pathname.replace('publish.html', 'invitation.html');
+    let url = baseUrl + '?id=' + encodeURIComponent(inv.id);
+    if (guestName && guestName.trim()) {
+      url += '&to=' + encodeURIComponent(guestName.trim());
+    }
+    return url;
+  }
+
+  function parseDescriptionTemplate(template, inv, guestName) {
+    const url = getInvitationUrlWithGuest(inv, guestName);
     const brideName = inv.brideFull || inv.bride || 'Mempelai Wanita';
     const groomName = inv.groomFull || inv.groom || 'Mempelai Pria';
     const coupleName = inv.title || (groomName + ' & ' + brideName);
 
     return template
+      .replace(/\[NAMA TAMU\]/g, guestName || 'Bapak/Ibu/Saudara/i')
       .replace(/\[MEMPELAI WANITA\]/g, brideName)
       .replace(/\[MEMPELAI PRIA\]/g, groomName)
       .replace(/\[MEMPELAI\]/g, coupleName)
@@ -1654,13 +1682,14 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     const template = DESC_TEMPLATES[idx];
     if (!template) return;
     const inv = getCurrentInvitation();
+    const guestName = document.getElementById('guestNameInput').value.trim();
     if (inv) {
-      document.getElementById('descTextarea').value = parseDescriptionTemplate(template, inv);
+      document.getElementById('descTextarea').value = parseDescriptionTemplate(template, inv, guestName);
     } else {
       document.getElementById('descTextarea').value = template;
     }
     closeAiDescModal();
-    showToast('Deskripsi diterapkan. Silakan sesuaikan nama tamu sebelum dibagikan.');
+    showToast('Deskripsi diterapkan. Sesuaikan nama tamu sebelum dibagikan.');
   }
 
   // Load data from most recent invitation or from dashboard navigation
@@ -1767,6 +1796,36 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     }
   }
 
+  // ===== NAMA TAMU / PERSONALIZED URL =====
+  function updateGuestName() {
+    const guestName = document.getElementById('guestNameInput').value.trim();
+    const inv = getCurrentInvitation();
+    if (inv) {
+      const url = getInvitationUrlWithGuest(inv, guestName);
+      document.getElementById('guestUrlInput').value = url;
+    }
+  }
+
+  function copyGuestUrl() {
+    const input = document.getElementById('guestUrlInput');
+    const btnText = document.getElementById('copyGuestText');
+    const btn = btnText.parentElement;
+
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(() => {
+      btnText.textContent = 'TERSALIN';
+      btn.style.borderColor = '#4a7c59';
+      btn.style.color = '#4a7c59';
+      showToast('Link personalisasi disalin');
+      setTimeout(() => {
+        btnText.textContent = 'Salin';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }, 2000);
+    });
+  }
+
   function loadInvitationData() {
     const invitations = getInvitations();
     const currentId = localStorage.getItem('em_current_invitation');
@@ -1793,9 +1852,13 @@ Tips: Gunakan browser terupdate dan nonaktifkan dark mode.`
     document.getElementById('previewMsg').textContent = inv.message || 'Dengan penuh sukacita, kami mengundang Anda untuk berbagi momen bahagia kami.';
     document.getElementById('previewTheme').textContent = 'The ' + (inv.template || 'Botanical');
 
+    // Initialize guest URL input
+    const baseUrl = getInvitationUrlWithGuest(inv, '');
+    document.getElementById('guestUrlInput').value = baseUrl;
+
     // Auto-fill description textarea with parsed template using actual invitation data
     const defaultTemplate = DESC_TEMPLATES[0];
-    const filledDesc = parseDescriptionTemplate(defaultTemplate, inv);
+    const filledDesc = parseDescriptionTemplate(defaultTemplate, inv, '');
     document.getElementById('descTextarea').value = filledDesc;
 
     currentStatus = inv.status || 'published';
