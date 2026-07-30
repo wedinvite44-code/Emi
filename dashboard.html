@@ -1888,50 +1888,17 @@
   }
 
 
-  /* Date & Time Picker Styling */
-  input[type="date"].em-input,
-  input[type="time"].em-input {
-    -webkit-appearance: none;
-    appearance: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--text-primary);
-    background: transparent;
-    cursor: pointer;
+  /* Place Picker */
+  #placePickerResults .em-guest-item:hover {
+    border-color: var(--accent-light);
+    background: rgba(184,149,106,0.04);
   }
-  input[type="date"].em-input::-webkit-calendar-picker-indicator,
-  input[type="time"].em-input::-webkit-calendar-picker-indicator {
-    filter: invert(0.4);
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.2s;
-    padding: 4px;
+  #placePickerOverlay .em-confirm-box {
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  input[type="date"].em-input::-webkit-calendar-picker-indicator:hover,
-  input[type="time"].em-input::-webkit-calendar-picker-indicator:hover {
-    opacity: 1;
-  }
-  input[type="date"].em-input::-webkit-datetime-edit,
-  input[type="time"].em-input::-webkit-datetime-edit {
-    font-family: 'Inter', sans-serif;
-  }
-  input[type="date"].em-input::-webkit-datetime-edit-text,
-  input[type="time"].em-input::-webkit-datetime-edit-text {
-    color: var(--text-muted);
-  }
-  input[type="date"].em-input::-webkit-datetime-edit-month-field,
-  input[type="date"].em-input::-webkit-datetime-edit-day-field,
-  input[type="date"].em-input::-webkit-datetime-edit-year-field,
-  input[type="time"].em-input::-webkit-datetime-edit-hour-field,
-  input[type="time"].em-input::-webkit-datetime-edit-minute-field {
-    color: var(--text-primary);
-  }
-  /* Firefox */
-  input[type="date"].em-input::-moz-calendar-picker-indicator,
-  input[type="time"].em-input::-moz-calendar-picker-indicator {
-    filter: invert(0.4);
-    cursor: pointer;
-    opacity: 0.6;
+  #placePickerOverlay.open .em-confirm-box {
+    transform: translateY(0);
   }
 </style>
 </head>
@@ -2592,17 +2559,16 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Tanggal</label>
-              <input type="date" class="em-input em-input-sm" id="inputAkadDatePicker" onchange="onDatePickerChange('akad')">
-            <input type="hidden" id="inputAkadDate" value="Jumat, 14 Agustus 2026">
+              <input type="text" class="em-input" id="inputAkadDate" value="Jumat, 14 Agustus 2026" placeholder="Jumat, 14 Agustus 2026" oninput="syncHiddenFields(); updatePreview()">
             </div>
             <div class="em-time-row">
               <div class="em-form-group">
                 <label class="em-form-label">Waktu Mulai</label>
-                <input type="time" class="em-input em-input-sm" id="inputAkadStart" value="08:00">
+                <input type="text" class="em-input em-input-sm" id="inputAkadStart" value="08:00" placeholder="08:00">
               </div>
               <div class="em-form-group">
                 <label class="em-form-label">Waktu Selesai</label>
-                <input type="time" class="em-input em-input-sm" id="inputAkadEnd" value="10:00">
+                <input type="text" class="em-input em-input-sm" id="inputAkadEnd" value="10:00" placeholder="10:00">
               </div>
             </div>
             <div class="em-form-group">
@@ -2616,10 +2582,10 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             <div class="em-form-group">
               <label class="em-form-label">Link Google Maps</label>
               <div style="display:flex;gap:8px;align-items:stretch;">
-                <input type="text" class="em-input em-input-sm" id="inputAkadMaps" placeholder="https://maps.google.com/..." style="flex:1;">
-                <button type="button" class="em-btn-calendar" onclick="openGoogleMapsSearch('inputAkadLocName','inputAkadAddress')" style="margin-top:0;white-space:nowrap;flex-shrink:0;">
+                <input type="text" class="em-input em-input-sm" id="inputAkadMaps" placeholder="https://maps.google.com/..." style="flex:1;" readonly>
+                <button type="button" class="em-btn-calendar" onclick="openPlacePicker('akad')" style="margin-top:0;white-space:nowrap;flex-shrink:0;">
                   <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                  Cari di Maps
+                  Pilih Lokasi
                 </button>
               </div>
             </div>
@@ -2632,17 +2598,16 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             </div>
             <div class="em-form-group">
               <label class="em-form-label">Tanggal</label>
-              <input type="date" class="em-input em-input-sm" id="inputResepsiDatePicker" onchange="onDatePickerChange('resepsi')">
-            <input type="hidden" id="inputResepsiDate" value="Sabtu, 15 Agustus 2026">
+              <input type="text" class="em-input" id="inputResepsiDate" value="Sabtu, 15 Agustus 2026" placeholder="Sabtu, 15 Agustus 2026" oninput="syncHiddenFields(); updatePreview()">
             </div>
             <div class="em-time-row">
               <div class="em-form-group">
                 <label class="em-form-label">Waktu Mulai</label>
-                <input type="time" class="em-input em-input-sm" id="inputResepsiStart" value="11:00">
+                <input type="text" class="em-input em-input-sm" id="inputResepsiStart" value="11:00" placeholder="11:00">
               </div>
               <div class="em-form-group">
                 <label class="em-form-label">Waktu Selesai</label>
-                <input type="time" class="em-input em-input-sm" id="inputResepsiEnd" value="15:00">
+                <input type="text" class="em-input em-input-sm" id="inputResepsiEnd" value="15:00" placeholder="15:00">
               </div>
             </div>
             <div class="em-form-group">
@@ -2656,10 +2621,10 @@ Dengan memohon ridho dan rahmat Allah SWT, kami bermaksud mengundang Bapak/Ibu/S
             <div class="em-form-group">
               <label class="em-form-label">Link Google Maps</label>
               <div style="display:flex;gap:8px;align-items:stretch;">
-                <input type="text" class="em-input em-input-sm" id="inputResepsiMaps" placeholder="https://maps.google.com/..." style="flex:1;">
-                <button type="button" class="em-btn-calendar" onclick="openGoogleMapsSearch('inputResepsiLocName','inputResepsiAddress')" style="margin-top:0;white-space:nowrap;flex-shrink:0;">
+                <input type="text" class="em-input em-input-sm" id="inputResepsiMaps" placeholder="https://maps.google.com/..." style="flex:1;" readonly>
+                <button type="button" class="em-btn-calendar" onclick="openPlacePicker('resepsi')" style="margin-top:0;white-space:nowrap;flex-shrink:0;">
                   <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                  Cari di Maps
+                  Pilih Lokasi
                 </button>
               </div>
             </div>
@@ -3286,39 +3251,6 @@ function syncHiddenFields() {
   }
 }
 
-// ===== DATE & TIME PICKER HELPERS =====
-const ID_MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-const ID_DAYS = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-
-function onDatePickerChange(eventType) {
-  const pickerId = eventType === 'akad' ? 'inputAkadDatePicker' : 'inputResepsiDatePicker';
-  const hiddenId = eventType === 'akad' ? 'inputAkadDate' : 'inputResepsiDate';
-  const rawVal = document.getElementById(pickerId).value;
-  if (!rawVal) return;
-  const d = new Date(rawVal + 'T00:00:00');
-  const formatted = ID_DAYS[d.getDay()] + ', ' + d.getDate() + ' ' + ID_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
-  document.getElementById(hiddenId).value = formatted;
-  syncHiddenFields();
-  updatePreview();
-}
-
-function setDatePickerFromString(eventType, dateStr) {
-  const pickerId = eventType === 'akad' ? 'inputAkadDatePicker' : 'inputResepsiDatePicker';
-  const hiddenId = eventType === 'akad' ? 'inputAkadDate' : 'inputResepsiDate';
-  const monthsMap = { 'januari':0,'februari':1,'maret':2,'april':3,'mei':4,'juni':5,'juli':6,'agustus':7,'september':8,'oktober':9,'november':10,'desember':11 };
-  document.getElementById(hiddenId).value = dateStr || '';
-  if (!dateStr) { document.getElementById(pickerId).value = ''; return; }
-  const m = dateStr.toLowerCase().match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
-  if (m) {
-    const day = parseInt(m[1]), month = monthsMap[m[2]], year = parseInt(m[3]);
-    if (month !== undefined) {
-      const d = new Date(year, month, day);
-      document.getElementById(pickerId).value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    }
-  }
-}
-
-
 function setTemplate(el, name, iconId) {
   document.querySelectorAll('.em-template').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
@@ -3550,10 +3482,6 @@ function resetAtelier() {
     if (el) el.value = val;
   }
 
-  // Initialize date pickers
-  setDatePickerFromString('akad', 'Jumat, 14 Agustus 2026');
-  setDatePickerFromString('resepsi', 'Sabtu, 15 Agustus 2026');
-
   updatePreview();
 }
 
@@ -3690,7 +3618,6 @@ function editInvitation(id) {
   // Event details
   if (inv.akad) {
     setVal('inputAkadDate', inv.akad.date);
-    setDatePickerFromString('akad', inv.akad.date);
     setVal('inputAkadStart', inv.akad.start);
     setVal('inputAkadEnd', inv.akad.end);
     setVal('inputAkadLocName', inv.akad.locName);
@@ -3699,7 +3626,6 @@ function editInvitation(id) {
   }
   if (inv.resepsi) {
     setVal('inputResepsiDate', inv.resepsi.date);
-    setDatePickerFromString('resepsi', inv.resepsi.date);
     setVal('inputResepsiStart', inv.resepsi.start);
     setVal('inputResepsiEnd', inv.resepsi.end);
     setVal('inputResepsiLocName', inv.resepsi.locName);
@@ -4450,6 +4376,130 @@ function toggleActivation() {
   }
 }
 
+
+// ===== PLACE PICKER =====
+let placePickerTarget = null;
+let placePickerSelectedData = null;
+
+function openPlacePicker(target) {
+  placePickerTarget = target;
+  placePickerSelectedData = null;
+  document.getElementById('placePickerSearch').value = '';
+  document.getElementById('placePickerResults').innerHTML = `
+    <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+      <svg width="40" height="40" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div style="font-size:13px;">Ketik nama lokasi dan tekan Cari</div>
+    </div>`;
+  document.getElementById('placePickerSelected').style.display = 'none';
+  document.getElementById('placePickerOverlay').classList.add('open');
+
+  // Pre-fill search with current location name if available
+  const locNameId = target === 'akad' ? 'inputAkadLocName' : 'inputResepsiLocName';
+  const locName = document.getElementById(locNameId)?.value;
+  if (locName) {
+    document.getElementById('placePickerSearch').value = locName;
+    searchPlaces();
+  }
+}
+
+function closePlacePicker() {
+  document.getElementById('placePickerOverlay').classList.remove('open');
+  placePickerTarget = null;
+  placePickerSelectedData = null;
+}
+
+function searchPlaces() {
+  const query = document.getElementById('placePickerSearch').value.trim();
+  if (!query) {
+    showToast('Ketik nama lokasi terlebih dahulu');
+    return;
+  }
+
+  const resultsContainer = document.getElementById('placePickerResults');
+  resultsContainer.innerHTML = `
+    <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+      <div style="width:24px; height:24px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px;"></div>
+      <div style="font-size:13px;">Mencari lokasi...</div>
+    </div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+
+  // Use Nominatim (OpenStreetMap) for geocoding - free, no API key needed
+  const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=5&addressdetails=1';
+
+  fetch(url, { headers: { 'Accept-Language': 'id' } })
+    .then(r => r.json())
+    .then(data => {
+      if (!data || data.length === 0) {
+        resultsContainer.innerHTML = `
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+            <svg width="32" height="32" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div style="font-size:13px;">Lokasi tidak ditemukan</div>
+            <div style="font-size:11px; margin-top:4px;">Coba dengan kata kunci lain</div>
+          </div>`;
+        return;
+      }
+
+      let html = '';
+      data.forEach((place, idx) => {
+        const name = place.display_name.split(',')[0];
+        const address = place.display_name;
+        const lat = place.lat;
+        const lon = place.lon;
+
+        html += `
+          <div class="em-guest-item" style="margin:0 12px 8px; cursor:pointer; transition:all 0.2s;" onclick="selectPlace('${escapeHtml(name)}', '${escapeHtml(address)}', '${lat}', '${lon}')">
+            <div class="em-guest-avatar" style="background:var(--preview-bg); color:var(--accent); font-size:14px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="em-guest-info">
+              <div class="em-guest-name">${escapeHtml(name)}</div>
+              <div class="em-guest-meta" style="white-space:normal; line-height:1.4;">${escapeHtml(address)}</div>
+            </div>
+          </div>`;
+      });
+      resultsContainer.innerHTML = html;
+    })
+    .catch(err => {
+      resultsContainer.innerHTML = `
+        <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+          <div style="font-size:13px;">Gagal mencari lokasi</div>
+          <div style="font-size:11px; margin-top:4px;">Periksa koneksi internet Anda</div>
+        </div>`;
+    });
+}
+
+function selectPlace(name, address, lat, lon) {
+  placePickerSelectedData = { name, address, lat, lon };
+  document.getElementById('placePickerSelectedName').textContent = name;
+  document.getElementById('placePickerSelectedAddress').textContent = address;
+  document.getElementById('placePickerSelected').style.display = 'block';
+
+  // Scroll to bottom to show selected info
+  const container = document.getElementById('placePickerResults');
+  container.scrollTop = container.scrollHeight;
+}
+
+function confirmPlaceSelection() {
+  if (!placePickerSelectedData || !placePickerTarget) return;
+
+  const { name, address, lat, lon } = placePickerSelectedData;
+
+  if (placePickerTarget === 'akad') {
+    document.getElementById('inputAkadLocName').value = name;
+    document.getElementById('inputAkadAddress').value = address;
+    document.getElementById('inputAkadMaps').value = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(name + ' ' + address);
+  } else {
+    document.getElementById('inputResepsiLocName').value = name;
+    document.getElementById('inputResepsiAddress').value = address;
+    document.getElementById('inputResepsiMaps').value = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(name + ' ' + address);
+  }
+
+  syncHiddenFields();
+  updatePreview();
+  closePlacePicker();
+  showToast('Lokasi berhasil dipilih');
+}
+
 function init() {
   const user = JSON.parse(localStorage.getItem('em_user') || '{}');
   if (user.name) {
@@ -4480,10 +4530,6 @@ function init() {
     saveInvitations(invitations);
     localStorage.removeItem('em_atelier_draft');
   }
-
-  // Initialize date pickers on first load
-  setDatePickerFromString('akad', 'Jumat, 14 Agustus 2026');
-  setDatePickerFromString('resepsi', 'Sabtu, 15 Agustus 2026');
 
   renderDashboard();
   updateBottomNav();
@@ -4741,7 +4787,41 @@ function renderGuestListDetail() {
             </div>
           </div>
         </div>
-      </div>`;
+      </div>
+
+  <!-- Place Picker Modal -->
+  <div class="em-confirm-overlay" id="placePickerOverlay" style="align-items:flex-end; z-index:150;">
+    <div class="em-confirm-box" style="width:100%; max-width:420px; max-height:85vh; padding:0; border-radius:20px 20px 0 0; text-align:left; overflow:hidden; display:flex; flex-direction:column;">
+      <!-- Header -->
+      <div style="padding:20px 20px 12px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:10;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="em-confirm-title" style="margin-bottom:0; font-size:20px;">Pilih Lokasi</div>
+          <button onclick="closePlacePicker()" style="background:none; border:none; font-size:22px; color:var(--text-secondary); cursor:pointer; width:32px; height:32px; display:flex; align-items:center; justify-content:center;">&times;</button>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="placePickerSearch" placeholder="Cari lokasi..." style="flex:1; background:var(--preview-bg); border:1px solid var(--border); border-radius:10px; padding:10px 14px; font-size:14px; color:var(--text-primary); font-family:'Inter',sans-serif; outline:none;" onkeydown="if(event.key==='Enter')searchPlaces()">
+          <button onclick="searchPlaces()" style="background:var(--dark); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:12px; font-weight:500; letter-spacing:1px; text-transform:uppercase; cursor:pointer; font-family:inherit; white-space:nowrap;">Cari</button>
+        </div>
+      </div>
+
+      <!-- Results List -->
+      <div id="placePickerResults" style="flex:1; overflow-y:auto; padding:8px 0; max-height:50vh;">
+        <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+          <svg width="40" height="40" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div style="font-size:13px;">Ketik nama lokasi dan tekan Cari</div>
+        </div>
+      </div>
+
+      <!-- Selected Place Info -->
+      <div id="placePickerSelected" style="display:none; padding:16px 20px; border-top:1px solid var(--border); background:var(--preview-bg);">
+        <div style="font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:4px;">Lokasi Dipilih</div>
+        <div id="placePickerSelectedName" style="font-size:14px; font-weight:500; color:var(--text-primary); margin-bottom:2px;"></div>
+        <div id="placePickerSelectedAddress" style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;"></div>
+        <button onclick="confirmPlaceSelection()" style="width:100%; background:var(--dark); color:#fff; border:none; border-radius:10px; padding:12px; font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:inherit;">Gunakan Lokasi Ini</button>
+      </div>
+    </div>
+  </div>
+`;
   });
   container.innerHTML = html;
 }
