@@ -1900,6 +1900,145 @@
   #placePickerOverlay.open .em-confirm-box {
     transform: translateY(0);
   }
+
+  /* Place Picker Tabs */
+  .em-place-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin: 0 20px;
+  }
+  .em-place-tab {
+    flex: 1;
+    padding: 12px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .em-place-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .em-place-tab:hover {
+    color: var(--text-primary);
+  }
+  .em-place-panel {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+    animation: fadeIn 0.3s ease;
+  }
+  .em-place-panel.active {
+    display: block;
+  }
+  .em-place-map-wrap {
+    padding: 12px 20px;
+  }
+  .em-place-map-iframe {
+    width: 100%;
+    height: 220px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--preview-bg);
+  }
+  .em-place-instruction {
+    padding: 0 20px 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .em-place-instruction strong {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .em-place-paste-row {
+    display: flex;
+    gap: 8px;
+    padding: 0 20px 16px;
+    align-items: stretch;
+  }
+  .em-place-paste-input {
+    flex: 1;
+    background: var(--preview-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+  .em-place-paste-input:focus {
+    border-color: var(--accent);
+  }
+  .em-place-paste-btn {
+    background: var(--dark);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+    transition: all 0.3s;
+  }
+  .em-place-paste-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(28,36,33,0.2);
+  }
+  .em-place-open-maps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    width: calc(100% - 40px);
+    margin: 0 20px 16px;
+    transition: all 0.3s;
+  }
+  .em-place-open-maps:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+  .em-place-open-maps svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .em-place-search-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 4px 20px 8px;
+    line-height: 1.5;
+  }
+
 </style>
 </head>
 <body>
@@ -2396,7 +2535,7 @@
 
   <!-- Place Picker Modal -->
   <div class="em-confirm-overlay" id="placePickerOverlay" style="align-items:flex-end; z-index:150;">
-    <div class="em-confirm-box" style="width:100%; max-width:420px; max-height:85vh; padding:0; border-radius:20px 20px 0 0; text-align:left; overflow:hidden; display:flex; flex-direction:column;">
+    <div class="em-confirm-box" style="width:100%; max-width:420px; max-height:90vh; padding:0; border-radius:20px 20px 0 0; text-align:left; overflow:hidden; display:flex; flex-direction:column;">
       <!-- Header -->
       <div style="padding:20px 20px 12px; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:10;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -2409,20 +2548,55 @@
         </div>
       </div>
 
-      <!-- Results List -->
-      <div id="placePickerResults" style="flex:1; overflow-y:auto; padding:8px 0; max-height:50vh;">
-        <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
-          <svg width="40" height="40" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <div style="font-size:13px;">Ketik nama lokasi dan tekan Cari</div>
+      <!-- Tabs -->
+      <div class="em-place-tabs">
+        <button class="em-place-tab active" id="tabSearch" onclick="switchPlaceTab('search')">Cari Lokasi</button>
+        <button class="em-place-tab" id="tabGoogleMaps" onclick="switchPlaceTab('maps')">Google Maps</button>
+      </div>
+
+      <!-- Panel: Cari Lokasi (Nominatim) -->
+      <div class="em-place-panel active" id="panelSearch">
+        <div class="em-place-search-hint">Pencarian menggunakan OpenStreetMap. Ketik nama lokasi dan tekan Cari.</div>
+        <div id="placePickerResults" style="padding:0 8px; max-height:45vh; overflow-y:auto;">
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+            <svg width="40" height="40" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:12px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div style="font-size:13px;">Ketik nama lokasi dan tekan Cari</div>
+          </div>
+        </div>
+        <!-- Selected Place Info -->
+        <div id="placePickerSelected" style="display:none; padding:16px 20px; border-top:1px solid var(--border); background:var(--preview-bg);">
+          <div style="font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:4px;">Lokasi Dipilih</div>
+          <div id="placePickerSelectedName" style="font-size:14px; font-weight:500; color:var(--text-primary); margin-bottom:2px;"></div>
+          <div id="placePickerSelectedAddress" style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;"></div>
+          <button onclick="confirmPlaceSelection()" style="width:100%; background:var(--dark); color:#fff; border:none; border-radius:10px; padding:12px; font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:inherit;">Gunakan Lokasi Ini</button>
         </div>
       </div>
 
-      <!-- Selected Place Info -->
-      <div id="placePickerSelected" style="display:none; padding:16px 20px; border-top:1px solid var(--border); background:var(--preview-bg);">
-        <div style="font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:4px;">Lokasi Dipilih</div>
-        <div id="placePickerSelectedName" style="font-size:14px; font-weight:500; color:var(--text-primary); margin-bottom:2px;"></div>
-        <div id="placePickerSelectedAddress" style="font-size:12px; color:var(--text-secondary); margin-bottom:12px;"></div>
-        <button onclick="confirmPlaceSelection()" style="width:100%; background:var(--dark); color:#fff; border:none; border-radius:10px; padding:12px; font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:inherit;">Gunakan Lokasi Ini</button>
+      <!-- Panel: Google Maps -->
+      <div class="em-place-panel" id="panelMaps">
+        <div class="em-place-instruction">
+          <strong>Cara pakai:</strong> Cari lokasi di Google Maps, lalu <em>copy-paste link share</em> ke bawah ini. Sistem akan otomatis mengisi nama lokasi, alamat, dan koordinat.
+        </div>
+        <button class="em-place-open-maps" onclick="openGoogleMapsSearch()">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Buka Google Maps
+        </button>
+        <div class="em-place-map-wrap">
+          <iframe id="googleMapsIframe" class="em-place-map-iframe" src="" style="display:none;" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); padding:0 20px 8px; letter-spacing:0.5px;">— atau paste link Google Maps —</div>
+        <div class="em-place-paste-row">
+          <input type="text" id="placePickerPasteUrl" class="em-place-paste-input" placeholder="https://maps.app.goo.gl/... atau https://goo.gl/maps/...">
+          <button class="em-place-paste-btn" onclick="applyPastedGoogleMapsUrl()">Parse</button>
+        </div>
+        <div id="placePickerParseResult" style="display:none; padding:0 20px 16px;">
+          <div style="background:var(--preview-bg); border:1px solid var(--border); border-radius:10px; padding:12px;">
+            <div style="font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--accent); margin-bottom:4px;">Hasil Parse</div>
+            <div id="parseResultName" style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:2px;"></div>
+            <div id="parseResultAddress" style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;"></div>
+            <button onclick="confirmParsedSelection()" style="width:100%; background:var(--dark); color:#fff; border:none; border-radius:8px; padding:10px; font-size:11px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; font-family:inherit;">Gunakan Lokasi Ini</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -4409,10 +4583,31 @@ function toggleActivation() {
 // ===== PLACE PICKER =====
 let placePickerTarget = null;
 let placePickerSelectedData = null;
+let parsedGoogleMapsData = null;
+let placePickerRetryCount = 0;
+const PLACE_PICKER_MAX_RETRY = 1;
+
+function switchPlaceTab(tab) {
+  document.querySelectorAll('.em-place-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.em-place-panel').forEach(p => p.classList.remove('active'));
+  if (tab === 'search') {
+    document.getElementById('tabSearch').classList.add('active');
+    document.getElementById('panelSearch').classList.add('active');
+  } else {
+    document.getElementById('tabGoogleMaps').classList.add('active');
+    document.getElementById('panelMaps').classList.add('active');
+    if (placePickerSelectedData && placePickerSelectedData.lat) {
+      previewGoogleMaps(placePickerSelectedData.lat, placePickerSelectedData.lon);
+    }
+  }
+}
 
 function openPlacePicker(target) {
   placePickerTarget = target;
   placePickerSelectedData = null;
+  parsedGoogleMapsData = null;
+  placePickerRetryCount = 0;
+  switchPlaceTab('search');
   document.getElementById('placePickerSearch').value = '';
   document.getElementById('placePickerResults').innerHTML = `
     <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
@@ -4420,21 +4615,25 @@ function openPlacePicker(target) {
       <div style="font-size:13px;">Ketik nama lokasi dan tekan Cari</div>
     </div>`;
   document.getElementById('placePickerSelected').style.display = 'none';
-  document.getElementById('placePickerOverlay').classList.add('open');
-
-  // Pre-fill search with current location name if available
+  document.getElementById('placePickerPasteUrl').value = '';
+  document.getElementById('placePickerParseResult').style.display = 'none';
+  document.getElementById('googleMapsIframe').style.display = 'none';
+  document.getElementById('googleMapsIframe').src = '';
   const locNameId = target === 'akad' ? 'inputAkadLocName' : 'inputResepsiLocName';
   const locName = document.getElementById(locNameId)?.value;
   if (locName) {
     document.getElementById('placePickerSearch').value = locName;
-    searchPlaces();
+    setTimeout(() => searchPlaces(), 300);
   }
+  document.getElementById('placePickerOverlay').classList.add('open');
 }
 
 function closePlacePicker() {
   document.getElementById('placePickerOverlay').classList.remove('open');
   placePickerTarget = null;
   placePickerSelectedData = null;
+  parsedGoogleMapsData = null;
+  placePickerRetryCount = 0;
 }
 
 function searchPlaces() {
@@ -4443,7 +4642,6 @@ function searchPlaces() {
     showToast('Ketik nama lokasi terlebih dahulu');
     return;
   }
-
   const resultsContainer = document.getElementById('placePickerResults');
   resultsContainer.innerHTML = `
     <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
@@ -4451,30 +4649,29 @@ function searchPlaces() {
       <div style="font-size:13px;">Mencari lokasi...</div>
     </div>
     <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-
-  // Use Nominatim (OpenStreetMap) for geocoding - free, no API key needed
-  const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=5&addressdetails=1';
-
-  fetch(url, { headers: { 'Accept-Language': 'id' } })
-    .then(r => r.json())
+  const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=8&addressdetails=1&countrycodes=id';
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
+  fetch(url, { headers: { 'Accept-Language': 'id' }, signal: controller.signal })
+    .then(r => { clearTimeout(timeoutId); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(data => {
+      placePickerRetryCount = 0;
       if (!data || data.length === 0) {
         resultsContainer.innerHTML = `
           <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
             <svg width="32" height="32" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div style="font-size:13px;">Lokasi tidak ditemukan</div>
-            <div style="font-size:11px; margin-top:4px;">Coba dengan kata kunci lain</div>
+            <div style="font-size:11px; margin-top:4px;">Coba dengan kata kunci lain atau gunakan tab Google Maps</div>
+            <button onclick="switchPlaceTab('maps')" style="margin-top:12px; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:8px 16px; border-radius:8px; font-size:11px; cursor:pointer; font-family:inherit;">Buka Google Maps</button>
           </div>`;
         return;
       }
-
       let html = '';
-      data.forEach((place, idx) => {
+      data.forEach((place) => {
         const name = place.display_name.split(',')[0];
         const address = place.display_name;
         const lat = place.lat;
         const lon = place.lon;
-
         html += `
           <div class="em-guest-item" style="margin:0 12px 8px; cursor:pointer; transition:all 0.2s;" onclick="selectPlace('${escapeHtml(name)}', '${escapeHtml(address)}', '${lat}', '${lon}')">
             <div class="em-guest-avatar" style="background:var(--preview-bg); color:var(--accent); font-size:14px;">
@@ -4489,10 +4686,19 @@ function searchPlaces() {
       resultsContainer.innerHTML = html;
     })
     .catch(err => {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError' && placePickerRetryCount < PLACE_PICKER_MAX_RETRY) {
+        placePickerRetryCount++;
+        showToast('Koneksi lambat, mencoba ulang...');
+        setTimeout(() => searchPlaces(), 800);
+        return;
+      }
       resultsContainer.innerHTML = `
         <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+          <svg width="32" height="32" viewBox="0 0 24 24" stroke="var(--border)" fill="none" stroke-width="1.5" style="margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <div style="font-size:13px;">Gagal mencari lokasi</div>
           <div style="font-size:11px; margin-top:4px;">Periksa koneksi internet Anda</div>
+          <button onclick="switchPlaceTab('maps')" style="margin-top:12px; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:8px 16px; border-radius:8px; font-size:11px; cursor:pointer; font-family:inherit;">Coba Google Maps</button>
         </div>`;
     });
 }
@@ -4502,17 +4708,20 @@ function selectPlace(name, address, lat, lon) {
   document.getElementById('placePickerSelectedName').textContent = name;
   document.getElementById('placePickerSelectedAddress').textContent = address;
   document.getElementById('placePickerSelected').style.display = 'block';
+  previewGoogleMaps(lat, lon);
+}
 
-  // Scroll to bottom to show selected info
-  const container = document.getElementById('placePickerResults');
-  container.scrollTop = container.scrollHeight;
+function previewGoogleMaps(lat, lon) {
+  const iframe = document.getElementById('googleMapsIframe');
+  if (iframe && lat && lon) {
+    iframe.src = 'https://maps.google.com/maps?q=' + lat + ',' + lon + '&z=16&output=embed';
+    iframe.style.display = 'block';
+  }
 }
 
 function confirmPlaceSelection() {
   if (!placePickerSelectedData || !placePickerTarget) return;
-
   const { name, address, lat, lon } = placePickerSelectedData;
-
   if (placePickerTarget === 'akad') {
     document.getElementById('inputAkadLocName').value = name;
     document.getElementById('inputAkadAddress').value = address;
@@ -4522,11 +4731,103 @@ function confirmPlaceSelection() {
     document.getElementById('inputResepsiAddress').value = address;
     document.getElementById('inputResepsiMaps').value = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(name + ' ' + address);
   }
-
   syncHiddenFields();
   updatePreview();
   closePlacePicker();
   showToast('Lokasi berhasil dipilih');
+}
+
+function openGoogleMapsSearch() {
+  const query = document.getElementById('placePickerSearch').value.trim() || 'lokasi';
+  const url = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+  window.open(url, '_blank');
+}
+
+function applyPastedGoogleMapsUrl() {
+  const url = document.getElementById('placePickerPasteUrl').value.trim();
+  if (!url) { showToast('Paste link Google Maps terlebih dahulu'); return; }
+  const parsed = parseGoogleMapsUrl(url);
+  if (!parsed) { showToast('Link tidak dikenali. Pastikan menggunakan link share dari Google Maps.'); return; }
+  parsedGoogleMapsData = parsed;
+  document.getElementById('parseResultName').textContent = parsed.name || 'Lokasi tanpa nama';
+  document.getElementById('parseResultAddress').textContent = parsed.address || url;
+  document.getElementById('placePickerParseResult').style.display = 'block';
+  if (parsed.lat && parsed.lon) {
+    previewGoogleMaps(parsed.lat, parsed.lon);
+  } else if (parsed.name) {
+    const iframe = document.getElementById('googleMapsIframe');
+    iframe.src = 'https://maps.google.com/maps?q=' + encodeURIComponent(parsed.name) + '&z=16&output=embed';
+    iframe.style.display = 'block';
+  }
+  showToast('Link berhasil diparse');
+}
+
+function confirmParsedSelection() {
+  if (!parsedGoogleMapsData || !placePickerTarget) return;
+  const { name, address, url } = parsedGoogleMapsData;
+  if (placePickerTarget === 'akad') {
+    document.getElementById('inputAkadLocName').value = name || 'Lokasi dari Google Maps';
+    document.getElementById('inputAkadAddress').value = address || '';
+    document.getElementById('inputAkadMaps').value = url;
+  } else {
+    document.getElementById('inputResepsiLocName').value = name || 'Lokasi dari Google Maps';
+    document.getElementById('inputResepsiAddress').value = address || '';
+    document.getElementById('inputResepsiMaps').value = url;
+  }
+  syncHiddenFields();
+  updatePreview();
+  closePlacePicker();
+  showToast('Lokasi dari Google Maps diterapkan');
+}
+
+function parseGoogleMapsUrl(url) {
+  try {
+    let name = '';
+    let address = '';
+    let lat = null;
+    let lon = null;
+    const placeMatch = url.match(/\/place\/([^/@]+)\/(@?)(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (placeMatch) {
+      name = decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+      lat = placeMatch[3];
+      lon = placeMatch[4];
+    }
+    if (!lat) {
+      const coordMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (coordMatch) { lat = coordMatch[1]; lon = coordMatch[2]; }
+    }
+    if (!name) {
+      const queryMatch = url.match(/[?&](q|query)=([^&]+)/);
+      if (queryMatch) { name = decodeURIComponent(queryMatch[2].replace(/\+/g, ' ')); }
+    }
+    if (url.includes('maps.app.goo.gl') || url.includes('goo.gl/maps')) {
+      name = name || 'Lokasi Google Maps';
+    }
+    return { name: name || 'Lokasi Google Maps', address: address || url, lat, lon, url: url };
+  } catch (e) { return null; }
+}
+
+function setupMapsInputAutoParse(inputId, locNameId, addressId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.addEventListener('paste', function(e) {
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    if (!pasted) return;
+    const parsed = parseGoogleMapsUrl(pasted);
+    if (parsed && (parsed.lat || parsed.name !== 'Lokasi Google Maps')) {
+      setTimeout(() => {
+        if (parsed.name && parsed.name !== 'Lokasi Google Maps') {
+          const locInput = document.getElementById(locNameId);
+          if (locInput && !locInput.value) locInput.value = parsed.name;
+        }
+        if (parsed.address && parsed.address !== pasted) {
+          const addrInput = document.getElementById(addressId);
+          if (addrInput && !addrInput.value) addrInput.value = parsed.address;
+        }
+        showToast('Link Google Maps terdeteksi & terisi otomatis');
+      }, 100);
+    }
+  });
 }
 
 function init() {
@@ -4559,6 +4860,10 @@ function init() {
     saveInvitations(invitations);
     localStorage.removeItem('em_atelier_draft');
   }
+
+  // Setup auto-parse for Google Maps URLs in location inputs
+  setupMapsInputAutoParse('inputAkadMaps', 'inputAkadLocName', 'inputAkadAddress');
+  setupMapsInputAutoParse('inputResepsiMaps', 'inputResepsiLocName', 'inputResepsiAddress');
 
   renderDashboard();
   updateBottomNav();
@@ -4942,17 +5247,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ===== GOOGLE MAPS SEARCH =====
-function openGoogleMapsSearch(locNameId, addressId) {
-  const locName = document.getElementById(locNameId)?.value?.trim() || '';
-  const address = document.getElementById(addressId)?.value?.trim() || '';
-  const query = encodeURIComponent(locName + (address ? ' ' + address : ''));
-  if (!locName && !address) {
-    showToast('Isi nama lokasi atau alamat terlebih dahulu');
-    return;
-  }
-  window.open('https://www.google.com/maps/search/?api=1&query=' + query, '_blank');
-}
+
 
 init();
 </script>
